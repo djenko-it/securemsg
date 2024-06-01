@@ -95,6 +95,7 @@ def contact():
 def admin():
     if 'logged_in' not in session:
         return redirect(url_for('login'))
+    settings = get_settings()  # Fetch settings here
     if request.method == 'POST':
         software_name = request.form['software_name']
         delete_on_read_default = 'delete_on_read_default' in request.form
@@ -110,11 +111,11 @@ def admin():
         flash('Paramètres mis à jour avec succès')
         return redirect(url_for('admin'))
     else:
-        settings = get_settings()
         return render_template('admin.html', settings=settings)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    settings = get_settings()  # Fetch settings here
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -128,10 +129,11 @@ def login():
                 return redirect(url_for('change_password'))
             return redirect(url_for('admin'))
         flash('Nom d’utilisateur ou mot de passe incorrect')
-    return render_template('login.html')
+    return render_template('login.html', settings=settings)
 
 @app.route('/change_password', methods=['GET', 'POST'])
 def change_password():
+    settings = get_settings()  # Fetch settings here
     if 'logged_in' not in session:
         return redirect(url_for('login'))
     if request.method == 'POST':
@@ -149,7 +151,7 @@ def change_password():
             return redirect(url_for('admin'))
         else:
             flash('Les mots de passe ne correspondent pas')
-    return render_template('change_password.html')
+    return render_template('change_password.html', settings=settings)
 
 @app.route('/logout')
 def logout():
@@ -180,6 +182,7 @@ def send_message():
 
 @app.route('/message/<message_id>', methods=['GET', 'POST'])
 def view_message(message_id):
+    settings = get_settings()  # Fetch settings here
     with sqlite3.connect(DATABASE) as conn:
         cur = conn.cursor()
         cur.execute('SELECT message, expiry, delete_on_read, password FROM messages WHERE id = ?', (message_id,))
@@ -199,17 +202,17 @@ def view_message(message_id):
                 password = request.form['password']
                 if hashed_password and not check_password_hash(hashed_password, password):
                     flash("Mot de passe incorrect.")
-                    return render_template('password_required.html', message_id=message_id)
+                    return render_template('password_required.html', message_id=message_id, settings=settings)
                 if delete_on_read:
                     conn.execute('DELETE FROM messages WHERE id = ?', (message_id,))
-                return render_template('view_message.html', message=message, expiry=expiry_time.isoformat(), delete_on_read=delete_on_read)
+                return render_template('view_message.html', message=message, expiry=expiry_time.isoformat(), delete_on_read=delete_on_read, settings=settings)
             else:
                 if hashed_password:
-                    return render_template('password_required.html', message_id=message_id)
+                    return render_template('password_required.html', message_id=message_id, settings=settings)
                 else:
                     if delete_on_read:
                         conn.execute('DELETE FROM messages WHERE id = ?', (message_id,))
-                    return render_template('view_message.html', message=message, expiry=expiry_time.isoformat(), delete_on_read=delete_on_read)
+                    return render_template('view_message.html', message=message, expiry=expiry_time.isoformat(), delete_on_read=delete_on_read, settings=settings)
         else:
             flash("Le message n'a pas été trouvé ou a déjà été consulté.")
             return redirect(url_for('message_not_found'))
