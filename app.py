@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template, url_for, flash, g
+from flask import Flask, request, redirect, render_template, url_for, flash, session, g
 import uuid
 import sqlite3
 from datetime import datetime, timedelta
@@ -34,14 +34,29 @@ def init_db():
                 id INTEGER PRIMARY KEY,
                 software_name TEXT,
                 delete_on_read_default BOOLEAN,
-                password_protect_default BOOLEAN
+                password_protect_default BOOLEAN,
+                show_delete_on_read BOOLEAN,
+                show_password_protect BOOLEAN
+            )
+        ''')
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS admin (
+                id INTEGER PRIMARY KEY,
+                username TEXT,
+                password TEXT,
+                must_change_password BOOLEAN
             )
         ''')
         # Insert default settings
         conn.execute('''
-            INSERT INTO settings (software_name, delete_on_read_default, password_protect_default)
+            INSERT INTO settings (software_name, delete_on_read_default, password_protect_default, show_delete_on_read, show_password_protect)
+            VALUES (?, ?, ?, ?, ?)
+        ''', ("SecureMsg", False, False, True, True))
+        # Insert default admin
+        conn.execute('''
+            INSERT INTO admin (username, password, must_change_password)
             VALUES (?, ?, ?)
-        ''', ("SecureMsg", False, False))
+        ''', ("admin", generate_password_hash("admin"), True))
 
 @app.teardown_appcontext
 def close_connection(exception):
@@ -51,12 +66,14 @@ def close_connection(exception):
 
 def get_settings():
     db = get_db()
-    cur = db.execute('SELECT software_name, delete_on_read_default, password_protect_default FROM settings WHERE id = 1')
+    cur = db.execute('SELECT software_name, delete_on_read_default, password_protect_default, show_delete_on_read, show_password_protect FROM settings WHERE id = 1')
     settings = cur.fetchone()
     return {
         'software_name': settings[0],
         'delete_on_read_default': settings[1],
-        'password_protect_default': settings[2]
+        'password_protect_default': settings[2],
+        'show_delete_on_read': settings[3],
+        'show_password_protect': settings[4]
     }
 
 @app.route('/')
@@ -76,21 +93,70 @@ def contact():
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
+    if 'logged_in' not in session:
+        return redirect(url_for('login'))
     if request.method == 'POST':
         software_name = request.form['software_name']
         delete_on_read_default = 'delete_on_read_default' in request.form
         password_protect_default = 'password_protect_default' in request.form
+        show_delete_on_read = 'show_delete_on_read' in request.form
+        show_password_protect = 'show_password_protect' in request.form
         with sqlite3.connect(DATABASE) as conn:
             conn.execute('''
                 UPDATE settings
-                SET software_name = ?, delete_on_read_default = ?, password_protect_default = ?
+                SET software_name = ?, delete_on_read_default = ?, password_protect_default = ?, show_delete_on_read = ?, show_password_protect = ?
                 WHERE id = 1
-            ''', (software_name, delete_on_read_default, password_protect_default))
+            ''', (software_name, delete_on_read_default, password_protect_default, show_delete_on_read, show_password_protect))
         flash('Paramètres mis à jour avec succès')
         return redirect(url_for('admin'))
     else:
         settings = get_settings()
         return render_template('admin.html', settings=settings)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        db = get_db()
+        cur = db.execute('SELECT id, password, must_change_password FROM admin WHERE username = ?', (username,))
+        admin = cur.fetchone()
+        if admin and check_password_hash(admin[1], password):
+            session['logged_in'] = True
+            session['admin_id'] = admin[0]
+            if admin[2]:  # Must change password
+                return redirect(url_for('change_password'))
+            return redirect(url_for('admin'))
+        flash('Nom d’utilisateur ou mot de passe incorrect')
+    return render_template('login.html')
+
+@app.route('/change_password', methods=['GET', 'POST'])
+def change_password():
+    if 'logged_in' not in session:
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        new_password = request.form['new_password']
+        confirm_password = request.form['confirm_password']
+        if new_password == confirm_password:
+            hashed_password = generate_password_hash(new_password)
+            with sqlite3.connect(DATABASE) as conn:
+                conn.execute('''
+                    UPDATE admin
+                    SET password = ?, must_change_password = 0
+                    WHERE id = ?
+                ''', (hashed_password, session['admin_id']))
+            flash('Mot de passe changé avec succès')
+            return redirect(url_for('admin'))
+        else:
+            flash('Les mots de passe ne correspondent pas')
+    return render_template('change_password.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    session.pop('admin_id', None)
+    flash('Vous avez été déconnecté')
+    return redirect(url_for('login'))
 
 @app.route('/send', methods=['POST'])
 def send_message():

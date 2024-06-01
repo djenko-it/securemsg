@@ -122,6 +122,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="#" data-toggle="modal" data-target="#contactModal">Contact</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin">Administration</a>
+                </li>
             </ul>
         </div>
     </nav>
@@ -141,10 +144,13 @@
                     <option value="1m">1 mois</option>
                 </select>
             </div>
+            {% if settings.show_delete_on_read %}
             <div class="form-group form-check">
                 <input type="checkbox" class="form-check-input" id="delete_on_read" name="delete_on_read" {% if settings.delete_on_read_default %}checked{% endif %}>
                 <label class="form-check-label" for="delete_on_read">Supprimer après lecture</label>
             </div>
+            {% endif %}
+            {% if settings.show_password_protect %}
             <div class="form-group form-check">
                 <input type="checkbox" class="form-check-input" id="password_protect" name="password_protect" {% if settings.password_protect_default %}checked{% endif %}>
                 <label class="form-check-label" for="password_protect">Protéger par mot de passe</label>
@@ -153,6 +159,7 @@
                 <label for="password">Mot de passe:</label>
                 <input type="password" class="form-control" id="password" name="password">
             </div>
+            {% endif %}
             <button type="submit" class="btn btn-primary btn-block">Envoyer le Message</button>
         </form>
         {% with messages = get_flashed_messages() %}
