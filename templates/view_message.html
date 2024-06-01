@@ -17,9 +17,11 @@
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
         }
         .navbar {
             background-color: #e3e3e3b3;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .navbar-brand {
             color: black;
@@ -27,9 +29,18 @@
         }
         .nav-link {
             color: black;
+            transition: color 0.3s;
         }
         .nav-link:hover {
-            color: #333333;
+            color: #007bff;
+        }
+        .message-box {
+            background-color: #d4edda; /* Vert clair */
+            border-color: #c3e6cb; /* Bordure vert clair */
+            color: #155724; /* Texte vert foncé */
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
         }
         .alert-info {
             background-color: #e9f7ff;
@@ -41,12 +52,41 @@
             border-color: #f5c6cb;
             color: #721c24;
         }
-        .message-box {
-            background-color: #d4edda; /* Vert clair */
-            border-color: #c3e6cb; /* Bordure vert clair */
-            color: #155724; /* Texte vert foncé */
-            padding: 20px;
-            border-radius: 5px;
+        .form-check-label {
+            margin-left: 10px;
+        }
+        button, .btn-primary {
+            background-color: #007bff;
+            border: none;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        button:hover, .btn-primary:hover {
+            background-color: #0056b3;
+            color: #ffffff;
+        }
+        .btn-copied {
+            background-color: #28a745;
+            color: white;
+        }
+        .modal-content {
+            border-radius: 10px;
+        }
+        .modal-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .modal-title {
+            font-weight: bold;
+        }
+        .modal-footer {
+            border-top: 1px solid #dee2e6;
+        }
+        .modal-body a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .modal-body a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>

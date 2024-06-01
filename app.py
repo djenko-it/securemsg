@@ -56,11 +56,11 @@ def send_message():
     hashed_password = generate_password_hash(password) if password else None
     message_id = str(uuid.uuid4())
     expiry_time = get_expiry_time(expiry_option)
-
+    
     with sqlite3.connect(DATABASE) as conn:
-        conn.execute('INSERT INTO messages (id, message, expiry, delete_on_read, password) VALUES (?, ?, ?, ?, ?)',
+        conn.execute('INSERT INTO messages (id, message, expiry, delete_on_read, password) VALUES (?, ?, ?, ?, ?)', 
                      (message_id, message, expiry_time, delete_on_read, hashed_password))
-
+    
     link = url_for('view_message', message_id=message_id, _external=True)
     flash(link)
     return redirect(url_for('index'))
