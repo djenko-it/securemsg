@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Message Sécurisé</title>
+    <title>Envoi de Message Sécurisé</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -17,11 +17,9 @@
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
         }
         .navbar {
             background-color: #e3e3e3b3;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .navbar-brand {
             color: black;
@@ -29,18 +27,23 @@
         }
         .nav-link {
             color: black;
-            transition: color 0.3s;
         }
         .nav-link:hover {
-            color: #007bff;
+            color: #333333;
         }
-        .message-box {
-            background-color: #d4edda; /* Vert clair */
-            border-color: #c3e6cb; /* Bordure vert clair */
-            color: #155724; /* Texte vert foncé */
-            padding: 20px;
-            border-radius: 5px;
-            margin-top: 20px;
+        textarea {
+            resize: none;
+        }
+        button, .btn-primary {
+            background-color: #007bff;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+        button:hover, .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .form-check-label {
+            margin-left: 10px;
         }
         .alert-info {
             background-color: #e9f7ff;
@@ -52,40 +55,28 @@
             border-color: #f5c6cb;
             color: #721c24;
         }
-        .form-check-label {
-            margin-left: 10px;
-        }
-        button, .btn-primary {
-            background-color: #007bff;
+        .alert-info .btn, .alert-danger .btn {
+            background: #007bff;
             border: none;
+            color: white;
+            font-size: 0.9em;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-left: 10px;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
-        button:hover, .btn-primary:hover {
+        .alert-info .btn:hover, .alert-danger .btn:hover {
             background-color: #0056b3;
-            color: #ffffff;
         }
-        .btn-copied {
+        .alert-info .btn.copied {
             background-color: #28a745;
             color: white;
         }
-        .modal-content {
-            border-radius: 10px;
-        }
-        .modal-header {
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-        }
-        .modal-title {
-            font-weight: bold;
-        }
-        .modal-footer {
-            border-top: 1px solid #dee2e6;
-        }
-        .modal-body a {
+        .alert-info a, .alert-danger a {
             color: #007bff;
             text-decoration: none;
         }
-        .modal-body a:hover {
+        .alert-info a:hover, .alert-danger a:hover {
             text-decoration: underline;
         }
     </style>
@@ -99,7 +90,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link home-link" href="/">Accueil</a>
+                    <a class="nav-link" href="/">Accueil</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#" data-toggle="modal" data-target="#aboutModal">À propos</a>
@@ -112,18 +103,47 @@
     </nav>
     
     <div class="container">
-        {% if message %}
-            <h1 class="text-center">Votre Message</h1>
-            <div class="message-box mt-4">{{ message }}</div>
-            {% if delete_on_read %}
-                <p class="text-center text-muted mt-3">Ce message est unique et ne sera plus accessible une fois cette page fermée.</p>
-            {% else %}
-                <p class="text-center text-muted mt-3">Durée de validité : <span id="time-remaining"></span></p>
-            {% endif %}
-        {% elif error %}
-            <h1 class="text-center">Erreur</h1>
-            <div class="alert alert-danger mt-4">{{ error }}</div>
-        {% endif %}
+        <h1 class="text-center">Envoyer un Message Sécurisé</h1>
+        <form action="/send" method="POST" class="mt-4">
+            <div class="form-group">
+                <textarea name="message" class="form-control" rows="4" placeholder="Entrez votre message ici"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="expiry">Durée de validité:</label>
+                <select name="expiry" class="form-control">
+                    <option value="3h">3 heures</option>
+                    <option value="1d">1 jour</option>
+                    <option value="1w">1 semaine</option>
+                    <option value="1m">1 mois</option>
+                </select>
+            </div>
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" id="delete_on_read" name="delete_on_read">
+                <label class="form-check-label" for="delete_on_read">Supprimer après lecture</label>
+            </div>
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" id="password_protect" name="password_protect">
+                <label class="form-check-label" for="password_protect">Protéger par mot de passe</label>
+            </div>
+            <div class="form-group" id="password_field" style="display:none;">
+                <label for="password">Mot de passe:</label>
+                <input type="password" class="form-control" id="password" name="password">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Envoyer le Message</button>
+        </form>
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="mt-4">
+              {% for message in messages %}
+                <div class="alert alert-info d-flex align-items-center">
+                  <a href="{{ message }}" target="_blank">{{ message }}</a>
+                  <button class="btn btn-secondary btn-sm ml-auto" onclick="copyToClipboard(this, '{{ message }}')">Copier le Lien</button>
+                </div>
+              {% endfor %}
+              <div id="additional-message" class="mt-2"></div>
+            </div>
+          {% endif %}
+        {% endwith %}
     </div>
     
     <!-- Modal À propos -->
@@ -170,53 +190,40 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const expiryTime = new Date('{{ expiry }}').getTime();
-            const timeRemainingElement = document.getElementById('time-remaining');
-
-            function updateTimeRemaining() {
-                const now = new Date().getTime();
-                const timeRemaining = expiryTime - now;
-
-                if (timeRemaining <= 0) {
-                    timeRemainingElement.innerHTML = 'Le message a expiré.';
-                } else {
-                    const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
-
-                    let timeString = "";
-                    if (days > 0) {
-                        timeString += `${days} jours `;
-                    }
-                    timeString += `${hours} heures ${minutes} minutes ${seconds} secondes`;
-
-                    timeRemainingElement.innerHTML = timeString;
-
-                    setTimeout(updateTimeRemaining, 1000);
-                }
-            }
-
-            updateTimeRemaining();
-
-            if ({{ delete_on_read|tojson }}) {
-                window.addEventListener('beforeunload', function (e) {
-                    const confirmationMessage = 'Ce message est unique et ne sera plus accessible une fois cette page fermée.';
-                    (e || window.event).returnValue = confirmationMessage; // Gecko + IE
-                    return confirmationMessage; // Webkit, Safari, Chrome etc.
-                });
-
-                document.querySelectorAll('.home-link').forEach(link => {
-                    link.addEventListener('click', function (event) {
-                        const confirmationMessage = 'Ce message est unique et ne sera plus accessible une fois cette page fermée. Voulez-vous continuer ?';
-                        if (!confirm(confirmationMessage)) {
-                            event.preventDefault();
-                        }
-                    });
-                });
+        document.getElementById('password_protect').addEventListener('change', function() {
+            const passwordField = document.getElementById('password_field');
+            if (this.checked) {
+                passwordField.style.display = 'block';
+            } else {
+                passwordField.style.display = 'none';
             }
         });
+
+        function copyToClipboard(button, url) {
+            const tempInput = document.createElement('input');
+            tempInput.value = url;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            button.classList.add('copied');
+            button.textContent = 'Lien copié';
+            alert('Lien copié dans le presse-papiers');
+
+            const deleteOnRead = document.getElementById('delete_on_read').checked;
+            const passwordProtect = document.getElementById('password_protect').checked;
+            let additionalMessage = '';
+
+            if (deleteOnRead) {
+                additionalMessage += '<p>Le lien généré sera unique et le message sera supprimé après consultation.</p>';
+            }
+
+            if (passwordProtect) {
+                additionalMessage += '<p>Veuillez bien retenir le mot de passe pour accéder au message.</p>';
+            }
+
+            document.getElementById('additional-message').innerHTML = additionalMessage;
+        }
     </script>
 </body>
 </html>
