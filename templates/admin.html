@@ -7,64 +7,101 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            padding-top: 70px.
-            background-color: #f8f9fa.
-            font-family: 'Arial', sans-serif.
+            padding-top: 70px;
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
         }
         .container {
-            max-width: 600px.
-            background: white.
-            padding: 30px.
-            border-radius: 10px.
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1).
-            margin-bottom: 30px.
+            max-width: 600px;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
         }
         .navbar {
-            background-color: #e3e3e3b3.
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1).
+            background-color: #e3e3e3b3;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .navbar-brand {
-            color: black.
-            font-weight: bold.
+            color: black;
+            font-weight: bold;
         }
         .nav-link {
-            color: black.
-            transition: color 0.3s.
+            color: black;
+            transition: color 0.3s;
         }
         .nav-link:hover {
-            color: #007bff.
+            color: #007bff;
         }
-        .form-check-label {
-            margin-left: 10px.
+        textarea {
+            resize: none;
         }
         button, .btn-primary {
-            background-color: #007bff.
-            border: none.
-            transition: background-color 0.3s ease, color 0.3s ease.
+            background-color: #007bff;
+            border: none;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         button:hover, .btn-primary:hover {
-            background-color: #0056b3.
-            color: #ffffff.
+            background-color: #0056b3;
+            color: #ffffff;
+        }
+        .form-check-label {
+            margin-left: 10px;
+        }
+        .alert-info {
+            background-color: #e9f7ff;
+            border-color: #b6effb;
+            color: #31708f;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .alert-info .btn, .alert-danger .btn {
+            background: #007bff;
+            border: none;
+            color: white;
+            font-size: 0.9em;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-left: 10px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .alert-info .btn:hover, .alert-danger .btn:hover {
+            background-color: #0056b3;
+        }
+        .alert-info .btn.copied {
+            background-color: #28a745;
+            color: white;
+        }
+        .alert-info a, .alert-danger a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .alert-info a:hover, .alert-danger a:hover {
+            text-decoration: underline;
         }
         .modal-content {
-            border-radius: 10px.
+            border-radius: 10px;
         }
         .modal-header {
-            background-color: #f8f9fa.
-            border-bottom: 1px solid #dee2e6.
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
         }
         .modal-title {
-            font-weight: bold.
+            font-weight: bold;
         }
         .modal-footer {
-            border-top: 1px solid #dee2e6.
+            border-top: 1px solid #dee2e6;
         }
         .modal-body a {
-            color: #007bff.
-            text-decoration: none.
+            color: #007bff;
+            text-decoration: none;
         }
         .modal-body a:hover {
-            text-decoration: underline.
+            text-decoration: underline;
         }
     </style>
 </head>
