@@ -41,6 +41,13 @@
             border-color: #f5c6cb;
             color: #721c24;
         }
+        .message-box {
+            background-color: #d4edda; /* Vert clair */
+            border-color: #c3e6cb; /* Bordure vert clair */
+            color: #155724; /* Texte vert foncé */
+            padding: 20px;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -67,11 +74,11 @@
     <div class="container">
         {% if message %}
             <h1 class="text-center">Votre Message</h1>
-            <div class="alert alert-info mt-4">{{ message }}</div>
+            <div class="message-box mt-4">{{ message }}</div>
             {% if delete_on_read %}
-                <p class="text-center text-muted">Ce message est unique et ne sera plus accessible une fois cette page fermée.</p>
+                <p class="text-center text-muted mt-3">Ce message est unique et ne sera plus accessible une fois cette page fermée.</p>
             {% else %}
-                <p class="text-center text-muted">Durée de validité : <span id="time-remaining"></span></p>
+                <p class="text-center text-muted mt-3">Durée de validité : <span id="time-remaining"></span></p>
             {% endif %}
         {% elif error %}
             <h1 class="text-center">Erreur</h1>
