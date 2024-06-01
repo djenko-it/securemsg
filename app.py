@@ -124,6 +124,32 @@ def admin():
     else:
         return render_template('admin.html', settings=settings)
 
+@app.route('/admin/change_password', methods=['POST'])
+def admin_change_password():
+    if 'logged_in' not in session:
+        return redirect(url_for('login'))
+    current_password = request.form['current_password']
+    new_password = request.form['new_password']
+    confirm_password = request.form['confirm_password']
+    
+    db = get_db()
+    cur = db.execute('SELECT id, password FROM admin WHERE username = "admin"')
+    admin = cur.fetchone()
+    
+    if not check_password_hash(admin[1], current_password):
+        flash('Mot de passe actuel incorrect')
+        return redirect(url_for('admin'))
+    
+    if new_password != confirm_password:
+        flash('Les nouveaux mots de passe ne correspondent pas')
+        return redirect(url_for('admin'))
+    
+    hashed_password = generate_password_hash(new_password)
+    with sqlite3.connect(DATABASE) as conn:
+        conn.execute('UPDATE admin SET password = ?, must_change_password = 0 WHERE id = ?', (hashed_password, admin[0]))
+    flash('Mot de passe administrateur changé avec succès')
+    return redirect(url_for('admin'))
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     settings = get_settings()  # Fetch settings here
