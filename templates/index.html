@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Envoi de Message Sécurisé</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 70px;
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            max-width: 600px;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .navbar {
+            background-color: #007bff;
+        }
+        .navbar-brand {
+            color: white;
+            font-weight: bold;
+        }
+        .nav-link {
+            color: white;
+        }
+        .nav-link:hover {
+            color: #e3e3e3;
+        }
+        textarea {
+            resize: none;
+        }
+        button, .btn-primary {
+            background-color: #007bff;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+        button:hover, .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .form-check-label {
+            margin-left: 10px;
+        }
+        .alert-info {
+            background-color: #e9f7ff;
+            border-color: #b6effb;
+            color: #31708f;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .alert-info .btn, .alert-danger .btn {
+            background: #007bff;
+            border: none;
+            color: white;
+            font-size: 0.9em;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-left: 10px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .alert-info .btn:hover, .alert-danger .btn:hover {
+            background-color: #0056b3;
+        }
+        .alert-info .btn.copied {
+            background-color: #28a745;
+            color: white;
+        }
+        .alert-info a, .alert-danger a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .alert-info a:hover, .alert-danger a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Barre de navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <a class="navbar-brand" href="#">SecureMsg</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Accueil</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">À propos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <h1 class="text-center">Envoyer un Message Sécurisé</h1>
+        <p class="text-center text-muted">Le lien généré sera unique et le message sera supprimé après consultation.</p>
+        <form action="/send" method="POST" class="mt-4">
+            <div class="form-group">
+                <textarea name="message" class="form-control" rows="4" placeholder="Entrez votre message ici"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="expiry">Durée de validité:</label>
+                <select name="expiry" class="form-control">
+                    <option value="1h">1 heure</option>
+                    <option value="1d">1 jour</option>
+                    <option value="1w">1 semaine</option>
+                    <option value="1m">1 mois</option>
+                </select>
+            </div>
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" id="delete_on_read" name="delete_on_read" checked>
+                <label class="form-check-label" for="delete_on_read">Supprimer après lecture</label>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Envoyer le Message</button>
+        </form>
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="mt-4">
+              {% for message in messages %}
+                <div class="alert alert-info d-flex align-items-center">
+                  <a href="{{ message }}" target="_blank">{{ message }}</a>
+                  <button class="btn btn-secondary btn-sm ml-auto" onclick="copyToClipboard(this, '{{ message }}')">Copier le Lien</button>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+    </div>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Custom JS for copying the link -->
+    <script>
+        function copyToClipboard(button, url) {
+            const tempInput = document.createElement('input');
+            tempInput.value = url;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            button.classList.add('copied');
+            button.textContent = 'Lien copié';
+            alert('Lien copié dans le presse-papiers');
+        }
+    </script>
+</body>
+</html>
+
