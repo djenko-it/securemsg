@@ -13,7 +13,7 @@ DATABASE = '/app/messages.db'
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
+        db = g._database = sqlite3.connect(DATABASE, timeout=10, check_same_thread=False)
     return db
 
 def init_db():
@@ -160,8 +160,7 @@ def login():
         cur = db.execute('SELECT id, password, must_change_password FROM admin WHERE username = ?', (username,))
         admin = cur.fetchone()
         if admin and check_password_hash(admin[1], password):
-            session['logged_in'] = True
-            session['admin_id'] = admin[0]
+            session['# admin_id'] = admin[0]
             if admin[2]:  # Must change password
                 return redirect(url_for('change_password'))
             return redirect(url_for('admin'))
@@ -267,3 +266,4 @@ def message_expired():
 if __name__ == '__main__':
     init_db()
     app.run(host='0.0.0.0', port=5000, debug=True)
+
