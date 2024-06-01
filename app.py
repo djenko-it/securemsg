@@ -76,6 +76,17 @@ def get_settings():
         'show_password_protect': settings[4]
     }
 
+def get_expiry_time(expiry_option):
+    if expiry_option == '3h':
+        return datetime.now() + timedelta(hours=3)
+    elif expiry_option == '1d':
+        return datetime.now() + timedelta(days=1)
+    elif expiry_option == '1w':
+        return datetime.now() + timedelta(weeks=1)
+    elif expiry_option == '1m':
+        return datetime.now() + timedelta(days=30)
+    return None
+
 @app.route('/')
 def index():
     settings = get_settings()
