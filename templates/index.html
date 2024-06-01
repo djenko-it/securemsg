@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Envoi de Message Sécurisé</title>
-    <!-- Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -20,17 +19,17 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         .navbar {
-            background-color: #007bff;
+            background-color: #e3e3e3b3;
         }
         .navbar-brand {
-            color: white;
+            color: black;
             font-weight: bold;
         }
         .nav-link {
-            color: white;
+            color: black;
         }
         .nav-link:hover {
-            color: #e3e3e3;
+            color: #333333;
         }
         textarea {
             resize: none;
@@ -83,30 +82,28 @@
     </style>
 </head>
 <body>
-    <!-- Barre de navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
-        <a class="navbar-brand" href="#">SecureMsg</a>
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <a class="navbar-brand" href="/">SecureMsg</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Accueil</a>
+                    <a class="nav-link" href="/">Accueil</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">À propos</a>
+                    <a class="nav-link" href="#" data-toggle="modal" data-target="#aboutModal">À propos</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Contact</a>
+                    <a class="nav-link" href="#" data-toggle="modal" data-target="#contactModal">Contact</a>
                 </li>
             </ul>
         </div>
     </nav>
-    
+
     <div class="container">
         <h1 class="text-center">Envoyer un Message Sécurisé</h1>
-        <p class="text-center text-muted">Le lien généré sera unique et le message sera supprimé après consultation.</p>
         <form action="/send" method="POST" class="mt-4">
             <div class="form-group">
                 <textarea name="message" class="form-control" rows="4" placeholder="Entrez votre message ici"></textarea>
@@ -114,15 +111,23 @@
             <div class="form-group">
                 <label for="expiry">Durée de validité:</label>
                 <select name="expiry" class="form-control">
-                    <option value="1h">1 heure</option>
+                    <option value="3h">3 heures</option>
                     <option value="1d">1 jour</option>
                     <option value="1w">1 semaine</option>
                     <option value="1m">1 mois</option>
                 </select>
             </div>
             <div class="form-group form-check">
-                <input type="checkbox" class="form-check-input" id="delete_on_read" name="delete_on_read" checked>
+                <input type="checkbox" class="form-check-input" id="delete_on_read" name="delete_on_read">
                 <label class="form-check-label" for="delete_on_read">Supprimer après lecture</label>
+            </div>
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" id="password_protect" name="password_protect">
+                <label class="form-check-label" for="password_protect">Protéger par mot de passe</label>
+            </div>
+            <div class="form-group" id="password_field" style="display:none;">
+                <label for="password">Mot de passe:</label>
+                <input type="password" class="form-control" id="password" name="password">
             </div>
             <button type="submit" class="btn btn-primary btn-block">Envoyer le Message</button>
         </form>
@@ -135,16 +140,65 @@
                   <button class="btn btn-secondary btn-sm ml-auto" onclick="copyToClipboard(this, '{{ message }}')">Copier le Lien</button>
                 </div>
               {% endfor %}
+              <div id="additional-message" class="mt-2"></div>
             </div>
           {% endif %}
         {% endwith %}
     </div>
-    <!-- Bootstrap JS and dependencies -->
+
+    <!-- Modal À propos -->
+    <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="aboutModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="aboutModalLabel">À propos</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Le but de ce site est de permettre l'envoi sécurisé de messages sensibles. Chaque message est protégé par un lien unique, et peut être configuré pour être supprimé après lecture ou après une certaine durée.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Contact -->
+    <div class="modal fade" id="contactModal" tabindex="-1" role="dialog" aria-labelledby="contactModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="contactModalLabel">Contact</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Pour toute question ou assistance, veuillez nous contacter à : <a href="mailto:djneko-it@protonmail.com">djneko-it@protonmail.com</a>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <!-- Custom JS for copying the link -->
     <script>
+        document.getElementById('password_protect').addEventListener('change', function() {
+            const passwordField = document.getElementById('password_field');
+            if (this.checked) {
+                passwordField.style.display = 'block';
+            } else {
+                passwordField.style.display = 'none';
+            }
+        });
+
         function copyToClipboard(button, url) {
             const tempInput = document.createElement('input');
             tempInput.value = url;
@@ -155,8 +209,21 @@
             button.classList.add('copied');
             button.textContent = 'Lien copié';
             alert('Lien copié dans le presse-papiers');
+
+            const deleteOnRead = document.getElementById('delete_on_read').checked;
+            const passwordProtect = document.getElementById('password_protect').checked;
+            let additionalMessage = '';
+
+            if (deleteOnRead) {
+                additionalMessage += '<p>Le lien généré sera unique et le message sera supprimé après consultation.</p>';
+            }
+
+            if (passwordProtect) {
+                additionalMessage += '<p>Veuillez bien retenir le mot de passe pour accéder au message.</p>';
+            }
+
+            document.getElementById('additional-message').innerHTML = additionalMessage;
         }
     </script>
 </body>
 </html>
-
