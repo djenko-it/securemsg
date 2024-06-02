@@ -3,3 +3,4 @@ Werkzeug==2.0.1
 Flask
 Flask-WTF
 Flask-Limiter
+redis
