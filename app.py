@@ -9,7 +9,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from wtforms import PasswordField, SubmitField
 from wtforms.validators import DataRequired
-import redis
+from redis import Redis
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')
