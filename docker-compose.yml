@@ -15,6 +15,7 @@ services:
       TITLE_READ_MESSAGE: "Lire le Message"
     volumes:
       - .:/app
+    entrypoint: ["/entrypoint.sh"]
 
   redis:
     image: "redis:alpine"
