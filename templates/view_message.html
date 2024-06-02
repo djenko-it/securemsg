@@ -200,7 +200,7 @@
 
             updateTimeRemaining();
 
-            if ({{ delete_on_read|tojson }}) {
+            if ( delete_on_read|tojson ) {
                 window.addEventListener('beforeunload', function (e) {
                     const confirmationMessage = 'Ce message est unique et ne sera plus accessible une fois cette page fermée.';
                     (e || window.event).returnValue = confirmationMessage; // Gecko + IE
