@@ -1,8 +1,11 @@
 #!/bin/sh
 # Entrypoint script to build CSS and start the Flask application
 
-# Build the Tailwind CSS
+# Créer le dossier static/css s'il n'existe pas
+mkdir -p static/css
+
+# Construire le CSS avec Tailwind
 npm run build:css
 
-# Start the Flask application
+# Démarrer l'application Flask
 exec "$@"
