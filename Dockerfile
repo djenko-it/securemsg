@@ -16,6 +16,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Installer les dépendances Node.js
 RUN npm install
 
+# Copier le script d'entrée et définir les permissions
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 # Exposer le port sur lequel l'application fonctionnera
 EXPOSE 5000
 
@@ -27,5 +31,8 @@ ENV CONTACT_EMAIL=djenko-it@protonmail.com
 ENV TITLE_SEND_MESSAGE="Envoyer un Message Sécurisé"
 ENV TITLE_READ_MESSAGE="Lire le Message"
 
+# Utiliser le script d'entrée
+ENTRYPOINT ["/entrypoint.sh"]
+
 # Lancer l'application
-CMD ["sh", "-c", "npm run build:css && python app.py"]
+CMD ["python", "app.py"]
