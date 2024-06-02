@@ -4,9 +4,11 @@ import uuid
 import sqlite3
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf import FlaskForm, CSRFProtect
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from wtforms import PasswordField, SubmitField
+from wtforms.validators import DataRequired
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')
@@ -107,6 +109,11 @@ def get_expiry_time(expiry_option):
         return datetime.now() + timedelta(days=30)
     return None
 
+# Formulaire de mot de passe
+class PasswordForm(FlaskForm):
+    password = PasswordField('Mot de passe', validators=[DataRequired()])
+    submit = SubmitField('Envoyer')
+
 @app.route('/')
 def index():
     settings = get_settings()
@@ -163,17 +170,19 @@ def view_message(message_id):
 
             time_remaining_str = str(time_remaining).split('.')[0]  # Format time remaining as H:M:S
 
+            form = PasswordForm()
             if request.method == 'POST':
-                password = request.form['password']
-                if hashed_password and not check_password_hash(hashed_password, password):
-                    flash("Mot de passe incorrect.")
-                    return render_template('password_required.html', message_id=message_id, settings=settings)
-                if delete_on_read:
-                    conn.execute('DELETE FROM messages WHERE id = ?', (message_id,))
-                return render_template('view_message.html', message=message, expiry=expiry_time.isoformat(), delete_on_read=delete_on_read, settings=settings, time_remaining=time_remaining_str)
+                if form.validate_on_submit():
+                    password = form.password.data
+                    if hashed_password and not check_password_hash(hashed_password, password):
+                        flash("Mot de passe incorrect.")
+                        return render_template('password_required.html', message_id=message_id, form=form, settings=settings)
+                    if delete_on_read:
+                        conn.execute('DELETE FROM messages WHERE id = ?', (message_id,))
+                    return render_template('view_message.html', message=message, expiry=expiry_time.isoformat(), delete_on_read=delete_on_read, settings=settings, time_remaining=time_remaining_str)
             else:
                 if hashed_password:
-                    return render_template('password_required.html', message_id=message_id, settings=settings)
+                    return render_template('password_required.html', message_id=message_id, form=form, settings=settings)
                 else:
                     if delete_on_read:
                         conn.execute('DELETE FROM messages WHERE id = ?', (message_id,))
