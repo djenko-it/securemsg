@@ -109,6 +109,21 @@ def get_expiry_time(expiry_option):
         return datetime.now() + timedelta(days=30)
     return None
 
+def calculate_validity_duration(expiry_time):
+    remaining_time = expiry_time - datetime.now()
+    days = remaining_time.days
+    hours, remainder = divmod(remaining_time.seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    if days > 0:
+        return f"{days} jours, {hours} heures, {minutes} minutes"
+    elif hours > 0:
+        return f"{hours} heures, {minutes} minutes"
+    elif minutes > 0:
+        return f"{minutes} minutes"
+    else:
+        return f"{seconds} secondes"
+
+
 # Formulaire de mot de passe
 class PasswordForm(FlaskForm):
     password = PasswordField('Mot de passe', validators=[DataRequired()])
@@ -168,7 +183,7 @@ def view_message(message_id):
                 flash("Le message a expiré.")
                 return redirect(url_for('message_expired'))
 
-            time_remaining_str = str(time_remaining).split('.')[0]  # Format time remaining as H:M:S
+            time_remaining_str = calculate_validity_duration(expiry_time)
 
             form = PasswordForm()
             if request.method == 'POST':
@@ -190,6 +205,7 @@ def view_message(message_id):
         else:
             flash("Le message n'a pas été trouvé ou a déjà été consulté.")
             return redirect(url_for('message_not_found'))
+
 
 @app.route('/message_not_found')
 def message_not_found():
