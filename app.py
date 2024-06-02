@@ -9,7 +9,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')  # Nécessaire pour les messages flash et CSRF
+app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')
 csrf = CSRFProtect(app)
 
 # Limiter les tentatives de connexion pour éviter les attaques par force brute
@@ -19,7 +19,6 @@ limiter = Limiter(
     default_limits=["200 per day", "50 per hour"]
 )
 
-# Configuration de la base de données
 DATABASE = '/app/messages.db'
 
 def get_db():
@@ -62,7 +61,6 @@ def init_db():
                 must_change_password BOOLEAN
             )
         ''')
-        # Insert default settings
         conn.execute('''
             INSERT INTO settings (software_name, delete_on_read_default, password_protect_default, show_delete_on_read, show_password_protect, contact_email, title_send_message, title_read_message)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -147,7 +145,7 @@ def send_message():
 
 @app.route('/message/<message_id>', methods=['GET', 'POST'])
 def view_message(message_id):
-    settings = get_settings()  # Fetch settings here
+    settings = get_settings()
     with sqlite3.connect(DATABASE) as conn:
         cur = conn.cursor()
         cur.execute('SELECT message, expiry, delete_on_read, password FROM messages WHERE id = ?', (message_id,))
@@ -197,4 +195,3 @@ def message_expired():
 if __name__ == '__main__':
     init_db()
     app.run(host='0.0.0.0', port=5000, debug=True)
-    
