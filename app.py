@@ -1,16 +1,15 @@
 import os
-from flask import Flask, request, redirect, render_template, url_for, flash, session, g
 import uuid
 import sqlite3
 from datetime import datetime, timedelta
+from flask import Flask, request, redirect, render_template, url_for, flash, session, g
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_wtf import FlaskForm, CSRFProtect
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from flask_limiter.storage.redis import RedisStorage
-from redis import Redis
 from wtforms import PasswordField, SubmitField
 from wtforms.validators import DataRequired
+from redis import Redis
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')
@@ -21,9 +20,9 @@ redis_client = Redis(host='redis', port=6379)
 
 # Limiter les tentatives de connexion pour éviter les attaques par force brute
 limiter = Limiter(
-    get_remote_address,
-    app=app,
+    key_func=get_remote_address,
     storage=RedisStorage(redis_client),
+    app=app,
     default_limits=["200 per day", "50 per hour"]
 )
 
@@ -115,11 +114,6 @@ def get_expiry_time(expiry_option):
         return datetime.now() + timedelta(days=30)
     return None
 
-# Formulaire de mot de passe
-class PasswordForm(FlaskForm):
-    password = PasswordField('Mot de passe', validators=[DataRequired()])
-    submit = SubmitField('Envoyer')
-
 def calculate_validity_duration(expiry_time):
     remaining_time = expiry_time - datetime.now()
     days = remaining_time.days
@@ -133,6 +127,12 @@ def calculate_validity_duration(expiry_time):
         return f"{minutes} minutes"
     else:
         return f"{seconds} secondes"
+
+
+# Formulaire de mot de passe
+class PasswordForm(FlaskForm):
+    password = PasswordField('Mot de passe', validators=[DataRequired()])
+    submit = SubmitField('Envoyer')
 
 @app.route('/')
 def index():
@@ -210,6 +210,7 @@ def view_message(message_id):
         else:
             flash("Le message n'a pas été trouvé ou a déjà été consulté.")
             return redirect(url_for('message_not_found'))
+
 
 @app.route('/message_not_found')
 def message_not_found():
