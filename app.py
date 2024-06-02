@@ -102,53 +102,53 @@ def contact():
     settings = get_settings()
     return render_template('contact.html', settings=settings)
 
-@app.route('/admin', methods=['GET', 'POST'])
-def admin():
-    if 'logged_in' not in session:
-        return redirect(url_for('login'))
-    settings = get_settings()  # Fetch settings here
-    if request.method == 'POST':
-        software_name = request.form['software_name']
-        delete_on_read_default = 'delete_on_read_default' in request.form
-        password_protect_default = 'password_protect_default' in request.form
-        show_delete_on_read = 'show_delete_on_read' in request.form
-        show_password_protect = 'show_password_protect' in request.form
-        with sqlite3.connect(DATABASE) as conn:
-            conn.execute('''
-                UPDATE settings
-                SET software_name = ?, delete_on_read_default = ?, password_protect_default = ?, show_delete_on_read = ?, show_password_protect = ?
-                WHERE id = 1
-            ''', (software_name, delete_on_read_default, password_protect_default, show_delete_on_read, show_password_protect))
-        flash('Paramètres mis à jour avec succès')
-        return redirect(url_for('admin'))
-    else:
-        return render_template('admin.html', settings=settings)
+# @app.route('/admin', methods=['GET', 'POST'])
+# def admin():
+#     if 'logged_in' not in session:
+#         return redirect(url_for('login'))
+#     settings = get_settings()  # Fetch settings here
+#     if request.method == 'POST':
+#         software_name = request.form['software_name']
+#         delete_on_read_default = 'delete_on_read_default' in request.form
+#         password_protect_default = 'password_protect_default' in request.form
+#         show_delete_on_read = 'show_delete_on_read' in request.form
+#         show_password_protect = 'show_password_protect' in request.form
+#         with sqlite3.connect(DATABASE) as conn:
+#             conn.execute('''
+#                 UPDATE settings
+#                 SET software_name = ?, delete_on_read_default = ?, password_protect_default = ?, show_delete_on_read = ?, show_password_protect = ?
+#                 WHERE id = 1
+#             ''', (software_name, delete_on_read_default, password_protect_default, show_delete_on_read, show_password_protect))
+#         flash('Paramètres mis à jour avec succès')
+#         return redirect(url_for('admin'))
+#     else:
+#         return render_template('admin.html', settings=settings)
 
-@app.route('/admin/change_password', methods=['POST'])
-def admin_change_password():
-    if 'logged_in' not in session:
-        return redirect(url_for('login'))
-    current_password = request.form['current_password']
-    new_password = request.form['new_password']
-    confirm_password = request.form['confirm_password']
+# @app.route('/admin/change_password', methods=['POST'])
+# def admin_change_password():
+#     if 'logged_in' not in session:
+#         return redirect(url_for('login'))
+#     current_password = request.form['current_password']
+#     new_password = request.form['new_password']
+#     confirm_password = request.form['confirm_password']
     
-    db = get_db()
-    cur = db.execute('SELECT id, password FROM admin WHERE username = "admin"')
-    admin = cur.fetchone()
+#     db = get_db()
+#     cur = db.execute('SELECT id, password FROM admin WHERE username = "admin"')
+#     admin = cur.fetchone()
     
-    if not check_password_hash(admin[1], current_password):
-        flash('Mot de passe actuel incorrect')
-        return redirect(url_for('admin'))
+#     if not check_password_hash(admin[1], current_password):
+#         flash('Mot de passe actuel incorrect')
+#         return redirect(url_for('admin'))
     
-    if new_password != confirm_password:
-        flash('Les nouveaux mots de passe ne correspondent pas')
-        return redirect(url_for('admin'))
+#     if new_password != confirm_password:
+#         flash('Les nouveaux mots de passe ne correspondent pas')
+#         return redirect(url_for('admin'))
     
-    hashed_password = generate_password_hash(new_password)
-    with sqlite3.connect(DATABASE) as conn:
-        conn.execute('UPDATE admin SET password = ?, must_change_password = 0 WHERE id = ?', (hashed_password, admin[0]))
-    flash('Mot de passe administrateur changé avec succès')
-    return redirect(url_for('admin'))
+#     hashed_password = generate_password_hash(new_password)
+#     with sqlite3.connect(DATABASE) as conn:
+#         conn.execute('UPDATE admin SET password = ?, must_change_password = 0 WHERE id = ?', (hashed_password, admin[0]))
+#     flash('Mot de passe administrateur changé avec succès')
+#     return redirect(url_for('admin'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -160,7 +160,8 @@ def login():
         cur = db.execute('SELECT id, password, must_change_password FROM admin WHERE username = ?', (username,))
         admin = cur.fetchone()
         if admin and check_password_hash(admin[1], password):
-            session['# admin_id'] = admin[0]
+            session['logged_in'] = True
+            session['admin_id'] = admin[0]
             if admin[2]:  # Must change password
                 return redirect(url_for('change_password'))
             return redirect(url_for('admin'))
@@ -266,4 +267,3 @@ def message_expired():
 if __name__ == '__main__':
     init_db()
     app.run(host='0.0.0.0', port=5000, debug=True)
-
