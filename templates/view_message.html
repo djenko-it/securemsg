@@ -5,122 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ settings.title_read_message }}</title>
     <link href="/static/css/tailwind.css" rel="stylesheet">
-    <style>
-        body {
-            padding-top: 70px;
-            background-color: #f8f9fa;
-            font-family: 'Arial', sans-serif;
-        }
-        .container {
-            max-width: 600px;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-        }
-        .navbar {
-            background-color: #e3e3e3b3;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .navbar-brand {
-            color: black;
-            font-weight: bold;
-        }
-        .nav-link {
-            color: black;
-            transition: color 0.3s;
-        }
-        .nav-link:hover {
-            color: #007bff;
-        }
-        .message-content {
-            background-color: #d4edda;
-            border-color: #c3e6cb;
-            color: #155724;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
-        }
-        .alert-warning {
-            background-color: #fff3cd;
-            border-color: #ffeeba;
-            color: #856404;
-        }
-        .alert-info {
-            background-color: #e9f7ff;
-            border-color: #b6effb;
-            color: #31708f;
-        }
-        .alert-danger {
-            background-color: #f8d7da;
-            border-color: #f5c6cb;
-            color: #721c24;
-        }
-        .alert-info .btn, .alert-danger .btn {
-            background: #007bff;
-            border: none;
-            color: white;
-            font-size: 0.9em;
-            padding: 5px 10px;
-            border-radius: 5px;
-            margin-left: 10px;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-        .alert-info .btn:hover, .alert-danger .btn:hover {
-            background-color: #0056b3;
-        }
-        .alert-info .btn.copied {
-            background-color: #28a745;
-            color: white;
-        }
-        .alert-info a, .alert-danger a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        .alert-info a:hover, .alert-danger a:hover {
-            text-decoration: underline;
-        }
-        .modal-content {
-            border-radius: 10px;
-        }
-        .modal-header {
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-        }
-        .modal-title {
-            font-weight: bold.
-        }
-        .modal-footer {
-            border-top: 1px solid #dee2e6.
-        }
-        .modal-body a {
-            color: #007bff;
-            text-decoration: none.
-        }
-        .modal-body a:hover {
-            text-decoration: underline.
-        }
-    </style>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg fixed-top">
+<body class="bg-gray-100 text-gray-900">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="/">{{ settings.software_name }}</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="#" data-toggle="modal" data-target="#aboutModal">À propos</a>
+                    <a class="nav-link" href="/" data-toggle="modal" data-target="#aboutModal">À propos</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#" data-toggle="modal" data-target="#contactModal">Contact</a>
+                    <a class="nav-link" href="/" data-toggle="modal" data-target="#contactModal">Contact</a>
                 </li>
             </ul>
         </div>
     </nav>
     <div class="container mt-4">
-        <div class="message-content">
-            <p>{{ message.content }}</p>
+        <div class="alert alert-info">
+            {{ message }}
         </div>
+        <div class="text-center mt-4">
+            <button class="btn btn-primary" onclick="copyToClipboard('{{ message_link }}')">Copier le lien</button>
+        </div>
+        {% if not delete_on_read %}
+        <div class="alert alert-warning mt-4">
+            Ce message est unique et ne sera plus accessible une fois cette page fermée.
+        </div>
+        {% endif %}
     </div>
 
     <!-- Modal À propos -->
@@ -166,5 +78,14 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('Lien copié dans le presse-papier');
+            }, function(err) {
+                alert('Erreur lors de la copie du lien');
+            });
+        }
+    </script>
 </body>
 </html>
