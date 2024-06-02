@@ -4,9 +4,20 @@ import uuid
 import sqlite3
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_wtf.csrf import CSRFProtect
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'  # Nécessaire pour les messages flash
+app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')  # Nécessaire pour les messages flash et CSRF
+csrf = CSRFProtect(app)
+
+# Limiter les tentatives de connexion pour éviter les attaques par force brute
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"]
+)
 
 # Configuration de la base de données
 DATABASE = '/app/messages.db'
@@ -114,6 +125,7 @@ def contact():
     return render_template('contact.html', settings=settings)
 
 @app.route('/send', methods=['POST'])
+@csrf.exempt  # Exempt CSRF pour cette route spécifique si nécessaire
 def send_message():
     settings = get_settings()
     message = request.form['message']
