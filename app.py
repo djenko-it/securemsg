@@ -38,7 +38,9 @@ def init_db():
                 password_protect_default BOOLEAN,
                 show_delete_on_read BOOLEAN,
                 show_password_protect BOOLEAN,
-                contact_email TEXT
+                contact_email TEXT,
+                title_send_message TEXT,
+                title_read_message TEXT
             )
         ''')
         conn.execute('''
@@ -51,15 +53,17 @@ def init_db():
         ''')
         # Insert default settings
         conn.execute('''
-            INSERT INTO settings (software_name, delete_on_read_default, password_protect_default, show_delete_on_read, show_password_protect, contact_email)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO settings (software_name, delete_on_read_default, password_protect_default, show_delete_on_read, show_password_protect, contact_email, title_send_message, title_read_message)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             os.environ.get('SOFTWARE_NAME', 'SecureMsg'),
             os.environ.get('DELETE_ON_READ_DEFAULT', 'false').lower() == 'true',
             os.environ.get('PASSWORD_PROTECT_DEFAULT', 'false').lower() == 'true',
             os.environ.get('SHOW_DELETE_ON_READ', 'true').lower() == 'true',
             os.environ.get('SHOW_PASSWORD_PROTECT', 'true').lower() == 'true',
-            os.environ.get('CONTACT_EMAIL', 'djenko-it@protonmail.com')
+            os.environ.get('CONTACT_EMAIL', 'djenko-it@protonmail.com'),
+            os.environ.get('TITLE_SEND_MESSAGE', 'Envoyer un Message Sécurisé'),
+            os.environ.get('TITLE_READ_MESSAGE', 'Lire le Message')
         ))
 
 @app.teardown_appcontext
@@ -70,7 +74,7 @@ def close_connection(exception):
 
 def get_settings():
     db = get_db()
-    cur = db.execute('SELECT software_name, delete_on_read_default, password_protect_default, show_delete_on_read, show_password_protect, contact_email FROM settings WHERE id = 1')
+    cur = db.execute('SELECT software_name, delete_on_read_default, password_protect_default, show_delete_on_read, show_password_protect, contact_email, title_send_message, title_read_message FROM settings WHERE id = 1')
     settings = cur.fetchone()
     return {
         'software_name': settings[0],
@@ -78,7 +82,9 @@ def get_settings():
         'password_protect_default': settings[2],
         'show_delete_on_read': settings[3],
         'show_password_protect': settings[4],
-        'contact_email': settings[5]
+        'contact_email': settings[5],
+        'title_send_message': settings[6],
+        'title_read_message': settings[7]
     }
 
 def get_expiry_time(expiry_option):

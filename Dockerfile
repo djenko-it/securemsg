@@ -18,6 +18,8 @@ ENV SOFTWARE_NAME=SecureMsg
 ENV SHOW_DELETE_ON_READ=true
 ENV SHOW_PASSWORD_PROTECT=true
 ENV CONTACT_EMAIL=djenko-it@protonmail.com
+ENV TITLE_SEND_MESSAGE="Envoyer un Message Sécurisé"
+ENV TITLE_READ_MESSAGE="Lire le Message"
 
 # Lancer l'application
 CMD ["python", "app.py"]

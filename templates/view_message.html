@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lire le Message</title>
+    <title>{{ settings.software_name }}</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -125,7 +125,7 @@
     </nav>
 
     <div class="container">
-        <h1 class="text-center">Lire le Message</h1>
+        <h1 class="text-center">{{ settings.title_read_message }}</h1>
         <div class="message-content">
             {{ message|safe }}
         </div>
