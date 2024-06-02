@@ -9,7 +9,4 @@ services:
       - .env
     volumes:
       - .:/app
-    entrypoint: ["/entrypoint.sh"]
 
-  redis:
-    image: "redis:alpine"
