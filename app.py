@@ -1,15 +1,15 @@
 import os
+from flask import Flask, request, redirect, render_template, url_for, flash, session, g
 import uuid
 import sqlite3
 from datetime import datetime, timedelta
-from flask import Flask, request, redirect, render_template, url_for, flash, session, g
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_wtf import FlaskForm, CSRFProtect
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from redis import Redis
 from wtforms import PasswordField, SubmitField
 from wtforms.validators import DataRequired
-from redis import Redis
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')
@@ -20,9 +20,9 @@ redis_client = Redis(host='redis', port=6379)
 
 # Limiter les tentatives de connexion pour éviter les attaques par force brute
 limiter = Limiter(
-    key_func=get_remote_address,
-    storage=RedisStorage(redis_client),
+    get_remote_address,
     app=app,
+    storage_uri='redis://redis:6379',
     default_limits=["200 per day", "50 per hour"]
 )
 
