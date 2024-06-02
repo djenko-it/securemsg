@@ -10,3 +10,5 @@ services:
     volumes:
       - .:/app
 
+  redis:
+    image: "redis:alpine"
