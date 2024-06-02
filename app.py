@@ -15,15 +15,15 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')
 csrf = CSRFProtect(app)
 
-# Configuration de Redis pour Flask-Limiter
-redis_url = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
-redis_client = redis.StrictRedis.from_url(redis_url)
+# Configuration de Redis
+redis_client = Redis(host='redis', port=6379)
 
 # Limiter les tentatives de connexion pour éviter les attaques par force brute
 limiter = Limiter(
     get_remote_address,
     app=app,
-    storage_uri=redis_url,
+    storage_uri='redis://redis:6379',
+    storage_options={'connection': redis_client},
     default_limits=["200 per day", "50 per hour"]
 )
 
