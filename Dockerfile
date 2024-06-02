@@ -17,6 +17,7 @@ EXPOSE 5000
 ENV SOFTWARE_NAME=SecureMsg
 ENV SHOW_DELETE_ON_READ=true
 ENV SHOW_PASSWORD_PROTECT=true
+ENV CONTACT_EMAIL=djenko-it@protonmail.com
 
 # Lancer l'application
 CMD ["python", "app.py"]

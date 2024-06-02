@@ -12,4 +12,5 @@ services:
       SOFTWARE_NAME: "SecureMsg"
       SHOW_DELETE_ON_READ: "true"
       SHOW_PASSWORD_PROTECT: "true"
+      CONTACT_EMAIL: "djenko-it@protonmail.com"
 
