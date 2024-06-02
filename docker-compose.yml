@@ -8,5 +8,8 @@ services:
     volumes:
       - .:/app
     environment:
-      - FLASK_ENV=development
+      FLASK_ENV: "development"
+      SOFTWARE_NAME: "SecureMsg"
+      SHOW_DELETE_ON_READ: "true"
+      SHOW_PASSWORD_PROTECT: "true"
 

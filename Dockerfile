@@ -1,18 +1,22 @@
-# Utiliser l'image officielle de Python
-FROM python:3.9-slim
+# Utiliser une image Python officielle comme image de base
+FROM python:3.9
 
-# Définir le répertoire de travail dans le conteneur
+# Définir le répertoire de travail
 WORKDIR /app
 
-# Copier les fichiers de l'application dans le répertoire de travail
+# Copier les fichiers de l'application
 COPY . /app
 
-# Installer les dépendances nécessaires
+# Installer les dépendances
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Exposer le port sur lequel l'application va s'exécuter
+# Exposer le port sur lequel l'application fonctionnera
 EXPOSE 5000
 
-# Définir la commande pour exécuter l'application
-CMD ["python", "app.py"]
+# Définir les variables d'environnement par défaut
+ENV SOFTWARE_NAME=SecureMsg
+ENV SHOW_DELETE_ON_READ=true
+ENV SHOW_PASSWORD_PROTECT=true
 
+# Lancer l'application
+CMD ["python", "app.py"]
