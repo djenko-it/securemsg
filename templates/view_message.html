@@ -170,7 +170,7 @@
             </button>
           </div>
           <div class="modal-body">
-            Pour toute question ou assistance, veuillez nous contacter à : <a href="mailto:djneko-it@protonmail.com">djneko-it@protonmail.com</a>
+            Pour toute question ou assistance, veuillez nous contacter à : <a href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
@@ -213,11 +213,12 @@
                 return;
             }
 
+            const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
             const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
 
-            document.getElementById('time-remaining').textContent = `${hours} heures ${minutes} minutes ${seconds} secondes`;
+            document.getElementById('time-remaining').textContent = `${days} jours ${hours} heures ${minutes} minutes ${seconds} secondes`;
         }
 
         const timerInterval = setInterval(updateTimeRemaining, 1000);
