@@ -235,6 +235,8 @@ def view_message(message_id):
                 flash("Le message a expiré.")
                 return redirect(url_for('message_expired'))
 
+            time_remaining_str = str(time_remaining).split('.')[0]  # Format time remaining as H:M:S
+
             if request.method == 'POST':
                 password = request.form['password']
                 if hashed_password and not check_password_hash(hashed_password, password):
@@ -242,14 +244,14 @@ def view_message(message_id):
                     return render_template('password_required.html', message_id=message_id, settings=settings)
                 if delete_on_read:
                     conn.execute('DELETE FROM messages WHERE id = ?', (message_id,))
-                return render_template('view_message.html', message=message, expiry=expiry_time.isoformat(), delete_on_read=delete_on_read, settings=settings)
+                return render_template('view_message.html', message=message, expiry=expiry_time.isoformat(), delete_on_read=delete_on_read, settings=settings, time_remaining=time_remaining_str)
             else:
                 if hashed_password:
                     return render_template('password_required.html', message_id=message_id, settings=settings)
                 else:
                     if delete_on_read:
                         conn.execute('DELETE FROM messages WHERE id = ?', (message_id,))
-                    return render_template('view_message.html', message=message, expiry=expiry_time.isoformat(), delete_on_read=delete_on_read, settings=settings)
+                    return render_template('view_message.html', message=message, expiry=expiry_time.isoformat(), delete_on_read=delete_on_read, settings=settings, time_remaining=time_remaining_str)
         else:
             flash("Le message n'a pas été trouvé ou a déjà été consulté.")
             return redirect(url_for('message_not_found'))
