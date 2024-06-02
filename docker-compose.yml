@@ -15,7 +15,6 @@ services:
       TITLE_READ_MESSAGE: "Lire le Message"
     volumes:
       - .:/app
-    command: ["sh", "-c", "npm run build:css && python app.py"]
 
   redis:
     image: "redis:alpine"
