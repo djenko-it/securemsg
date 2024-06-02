@@ -5,14 +5,17 @@ services:
     build: .
     ports:
       - "5000:5000"
-    volumes:
-      - .:/app
     environment:
-      FLASK_ENV: "development"
+      FLASK_ENV: "development"  # ou "production" selon votre besoin
       SOFTWARE_NAME: "SecureMsg"
       SHOW_DELETE_ON_READ: "true"
       SHOW_PASSWORD_PROTECT: "true"
       CONTACT_EMAIL: "djenko-it@protonmail.com"
       TITLE_SEND_MESSAGE: "Envoyer un Message Sécurisé"
       TITLE_READ_MESSAGE: "Lire le Message"
+    volumes:
+      - .:/app
+    command: ["sh", "-c", "npm run build:css && python app.py"]
 
+  redis:
+    image: "redis:alpine"

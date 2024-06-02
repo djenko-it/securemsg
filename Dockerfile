@@ -16,9 +16,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Installer les dépendances Node.js
 RUN npm install
 
-# Construire le CSS avec Tailwind
-RUN npm run build:css
-
 # Exposer le port sur lequel l'application fonctionnera
 EXPOSE 5000
 
@@ -31,4 +28,4 @@ ENV TITLE_SEND_MESSAGE="Envoyer un Message Sécurisé"
 ENV TITLE_READ_MESSAGE="Lire le Message"
 
 # Lancer l'application
-CMD ["python", "app.py"]
+CMD ["sh", "-c", "npm run build:css && python app.py"]
