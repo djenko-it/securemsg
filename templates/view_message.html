@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ settings.software_name }}</title>
+    <title>Lire le Message</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -34,13 +34,18 @@
         .nav-link:hover {
             color: #007bff;
         }
-        .message-box {
-            background-color: #d4edda; /* Vert clair */
-            border-color: #c3e6cb; /* Bordure vert clair */
-            color: #155724; /* Texte vert foncé */
-            padding: 20px;
+        .message-content {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+            padding: 15px;
             border-radius: 5px;
             margin-top: 20px;
+        }
+        .alert-warning {
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+            color: #856404;
         }
         .alert-info {
             background-color: #e9f7ff;
@@ -52,21 +57,29 @@
             border-color: #f5c6cb;
             color: #721c24;
         }
-        .form-check-label {
-            margin-left: 10px;
-        }
-        button, .btn-primary {
-            background-color: #007bff;
+        .alert-info .btn, .alert-danger .btn {
+            background: #007bff;
             border: none;
+            color: white;
+            font-size: 0.9em;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-left: 10px;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
-        button:hover, .btn-primary:hover {
+        .alert-info .btn:hover, .alert-danger .btn:hover {
             background-color: #0056b3;
-            color: #ffffff;
         }
-        .btn-copied {
+        .alert-info .btn.copied {
             background-color: #28a745;
             color: white;
+        }
+        .alert-info a, .alert-danger a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .alert-info a:hover, .alert-danger a:hover {
+            text-decoration: underline;
         }
         .modal-content {
             border-radius: 10px;
@@ -110,22 +123,19 @@
             </ul>
         </div>
     </nav>
-    
+
     <div class="container">
-        {% if message %}
-            <h1 class="text-center">Votre Message</h1>
-            <div class="message-box mt-4">{{ message }}</div>
-            {% if delete_on_read %}
-                <p class="text-center text-muted mt-3">Ce message est unique et ne sera plus accessible une fois cette page fermée.</p>
-            {% else %}
-                <p class="text-center text-muted mt-3">Durée de validité : <span id="time-remaining"></span></p>
-            {% endif %}
-        {% elif error %}
-            <h1 class="text-center">Erreur</h1>
-            <div class="alert alert-danger mt-4">{{ error }}</div>
+        <h1 class="text-center">Lire le Message</h1>
+        <div class="message-content">
+            {{ message|safe }}
+        </div>
+        {% if delete_on_read %}
+        <div class="alert alert-warning mt-4" role="alert">
+            Ce message est unique et ne sera plus accessible une fois cette page fermée.
+        </div>
         {% endif %}
     </div>
-    
+
     <!-- Modal À propos -->
     <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="aboutModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
@@ -170,53 +180,23 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const expiryTime = new Date('{{ expiry }}').getTime();
-            const timeRemainingElement = document.getElementById('time-remaining');
+        const deleteOnRead = {{ delete_on_read|tojson }};
+        if (deleteOnRead) {
+            window.addEventListener('beforeunload', function (e) {
+                const confirmationMessage = 'Ce message est unique et ne sera plus accessible une fois cette page fermée.';
+                (e || window.event).returnValue = confirmationMessage; // Gecko + IE
+                return confirmationMessage; // Webkit, Safari, Chrome etc.
+            });
 
-            function updateTimeRemaining() {
-                const now = new Date().getTime();
-                const timeRemaining = expiryTime - now;
-
-                if (timeRemaining <= 0) {
-                    timeRemainingElement.innerHTML = 'Le message a expiré.';
-                } else {
-                    const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
-
-                    let timeString = "";
-                    if (days > 0) {
-                        timeString += `${days} jours `;
+            document.querySelectorAll('.home-link').forEach(link => {
+                link.addEventListener('click', function (event) {
+                    const confirmationMessage = 'Ce message est unique et ne sera plus accessible une fois cette page fermée. Voulez-vous continuer ?';
+                    if (!confirm(confirmationMessage)) {
+                        event.preventDefault();
                     }
-                    timeString += `${hours} heures ${minutes} minutes ${seconds} secondes`;
-
-                    timeRemainingElement.innerHTML = timeString;
-
-                    setTimeout(updateTimeRemaining, 1000);
-                }
-            }
-
-            updateTimeRemaining();
-
-            if ( delete_on_read|tojson ) {
-                window.addEventListener('beforeunload', function (e) {
-                    const confirmationMessage = 'Ce message est unique et ne sera plus accessible une fois cette page fermée.';
-                    (e || window.event).returnValue = confirmationMessage; // Gecko + IE
-                    return confirmationMessage; // Webkit, Safari, Chrome etc.
                 });
-
-                document.querySelectorAll('.home-link').forEach(link => {
-                    link.addEventListener('click', function (event) {
-                        const confirmationMessage = 'Ce message est unique et ne sera plus accessible une fois cette page fermée. Voulez-vous continuer ?';
-                        if (!confirm(confirmationMessage)) {
-                            event.preventDefault();
-                        }
-                    });
-                });
-            }
-        });
+            });
+        }
     </script>
 </body>
 </html>
