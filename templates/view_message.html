@@ -26,9 +26,9 @@
             {{ message }}
         </div>
         <div class="text-center mt-4">
-            <button class="btn btn-primary" onclick="copyToClipboard('{{ message_link }}')">Copier le lien</button>
+            <p>Durée de validité du message : <strong>{{ validity_duration }}</strong></p>
         </div>
-        {% if not delete_on_read %}
+        {% if delete_on_read %}
         <div class="alert alert-warning mt-4">
             Ce message est unique et ne sera plus accessible une fois cette page fermée.
         </div>
@@ -79,13 +79,22 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(function() {
-                alert('Lien copié dans le presse-papier');
-            }, function(err) {
-                alert('Erreur lors de la copie du lien');
+        {% if delete_on_read %}
+        window.addEventListener('beforeunload', function (e) {
+            var confirmationMessage = 'Ce message est unique et ne sera plus accessible une fois cette page fermée.';
+            (e || window.event).returnValue = confirmationMessage; // Gecko + IE
+            return confirmationMessage; // Webkit, Safari, Chrome etc.
+        });
+
+        document.querySelectorAll('a.nav-link').forEach(link => {
+            link.addEventListener('click', function (event) {
+                var confirmationMessage = 'Ce message est unique et ne sera plus accessible une fois cette page fermée. Voulez-vous continuer ?';
+                if (!confirm(confirmationMessage)) {
+                    event.preventDefault();
+                }
             });
-        }
+        });
+        {% endif %}
     </script>
 </body>
 </html>
