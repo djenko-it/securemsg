@@ -4,137 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ settings.software_name }}</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            padding-top: 70px;
-            background-color: #f8f9fa;
-            font-family: 'Arial', sans-serif;
-        }
-        .container {
-            max-width: 600px;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-        }
-        .navbar {
-            background-color: #e3e3e3b3;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .navbar-brand {
-            color: black;
-            font-weight: bold;
-        }
-        .nav-link {
-            color: black;
-            transition: color 0.3s;
-        }
-        .nav-link:hover {
-            color: #007bff;
-        }
-        textarea {
-            resize: none;
-        }
-        button, .btn-primary {
-            background-color: #007bff;
-            border: none;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-        button:hover, .btn-primary:hover {
-            background-color: #0056b3;
-            color: #ffffff;
-        }
-        .form-check-label {
-            margin-left: 10px;
-        }
-        .alert-info {
-            background-color: #e9f7ff;
-            border-color: #b6effb;
-            color: #31708f;
-        }
-        .alert-danger {
-            background-color: #f8d7da;
-            border-color: #f5c6cb;
-            color: #721c24;
-        }
-        .alert-info .btn, .alert-danger .btn {
-            background: #007bff;
-            border: none;
-            color: white;
-            font-size: 0.9em;
-            padding: 5px 10px;
-            border-radius: 5px;
-            margin-left: 10px;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-        .alert-info .btn:hover, .alert-danger .btn:hover {
-            background-color: #0056b3;
-        }
-        .alert-info .btn.copied {
-            background-color: #28a745;
-            color: white;
-        }
-        .alert-info a, .alert-danger a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        .alert-info a:hover, .alert-danger a:hover {
-            text-decoration: underline;
-        }
-        .modal-content {
-            border-radius: 10px;
-        }
-        .modal-header {
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-        }
-        .modal-title {
-            font-weight: bold;
-        }
-        .modal-footer {
-            border-top: 1px solid #dee2e6;
-        }
-        .modal-body a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        .modal-body a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <link href="/static/css/tailwind.css" rel="stylesheet">
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg fixed-top">
-        <a class="navbar-brand" href="/">{{ settings.software_name }}</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/">Accueil</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" data-toggle="modal" data-target="#aboutModal">À propos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" data-toggle="modal" data-target="#contactModal">Contact</a>
-                </li>
-            </ul>
+<body class="bg-gray-100 text-gray-900">
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a class="text-white text-lg font-bold" href="/">{{ settings.software_name }}</a>
+            <div class="flex space-x-4">
+                <a class="   text-gray-300 hover:text-white" href="/">Accueil</a>
+                <a class="text-gray-300 hover:text-white" href="#" data-toggle="modal" data-target="#aboutModal">À propos</a>
+                <a class="text-gray-300 hover:text-white" href="#" data-toggle="modal" data-target="#contactModal">Contact</a>
+            </div>
         </div>
     </nav>
-    
-    <div class="container">
-        <h1 class="text-center">{{ settings.title_send_message }}</h1>
-        <form action="/send" method="POST" class="mt-4">
-            <div class="form-group">
-                <textarea name="message" class="form-control" rows="4" placeholder="Entrez votre message ici"></textarea>
+
+    <div class="container mx-auto mt-8">
+        <h1 class="text-3xl text-center font-bold">{{ settings.title_send_message }}</h1>
+        <form class="mt-6 bg-white p-6 rounded-lg shadow-md" action="/send" method="post">
+            <div class="mb-4">
+                <label for="message" class="block text-gray-700">Message :</label>
+                <textarea id="message" name="message" class="w-full p-2 border border-gray-300 rounded-md" rows="4" required></textarea>
             </div>
-            <div class="form-group">
-                <label for="expiry">Durée de validité:</label>
-                <select name="expiry" class="form-control">
+            <div class="mb-4">
+                <label for="expiry" class="block text-gray-700">Durée de validité :</label>
+                <select id="expiry" name="expiry" class="w-full p-2 border border-gray-300 rounded-md" required>
                     <option value="3h">3 heures</option>
                     <option value="1d">1 jour</option>
                     <option value="1w">1 semaine</option>
@@ -142,116 +35,77 @@
                 </select>
             </div>
             {% if settings.show_delete_on_read %}
-            <div class="form-group form-check">
-                <input type="checkbox" class="form-check-input" id="delete_on_read" name="delete_on_read" {% if settings.delete_on_read_default %}checked{% endif %}>
-                <label class="form-check-label" for="delete_on_read">Supprimer après lecture</label>
+            <div class="mb-4">
+                <input type="checkbox" id="delete_on_read" name="delete_on_read">
+                <label for="delete_on_read" class="text-gray-700">Supprimer après lecture</label>
             </div>
             {% endif %}
             {% if settings.show_password_protect %}
-            <div class="form-group form-check">
-                <input type="checkbox" class="form-check-input" id="password_protect" name="password_protect" {% if settings.password_protect_default %}checked{% endif %}>
-                <label class="form-check-label" for="password_protect">Protéger par mot de passe</label>
-            </div>
-            <div class="form-group" id="password_field" style="display:none;">
-                <label for="password">Mot de passe:</label>
-                <input type="password" class="form-control" id="password" name="password">
+            <div class="mb-4">
+                <input type="checkbox" id="password_protect" name="password_protect">
+                <label for="password_protect" class="text-gray-700">Protéger par mot de passe</label>
+                <input type="password" id="password" name="password" class="w-full p-2 border border-gray-300 rounded-md mt-2" placeholder="Entrez un mot de passe">
             </div>
             {% endif %}
-            <button type="submit" class="btn btn-primary btn-block">Envoyer le Message</button>
+            <div class="text-center">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Envoyer</button>
+            </div>
         </form>
         {% with messages = get_flashed_messages() %}
-          {% if messages %}
-            <div class="mt-4">
-              {% for message in messages %}
-                <div class="alert alert-info d-flex align-items-center">
-                  <a href="{{ message }}" target="_blank">{{ message }}</a>
-                  <button class="btn btn-secondary btn-sm ml-auto" onclick="copyToClipboard(this, '{{ message }}')">Copier le Lien</button>
+            {% if messages %}
+                <div class="mt-4">
+                    {% for message in messages %}
+                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
                 </div>
-              {% endfor %}
-              <div id="additional-message" class="mt-2"></div>
-            </div>
-          {% endif %}
+            {% endif %}
         {% endwith %}
     </div>
-    
+
     <!-- Modal À propos -->
     <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="aboutModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="aboutModalLabel">À propos</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            Le but de ce site est de permettre l'envoi sécurisé de messages sensibles. Chaque message est protégé par un lien unique, et peut être configuré pour être supprimé après lecture ou après une certaine durée.
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-          </div>
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="aboutModalLabel">À propos</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Le but de ce site est de permettre l'envoi sécurisé de messages sensibles. Chaque message est protégé par un lien unique, et peut être configuré pour être supprimé après lecture ou après une certaine durée.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
 
     <!-- Modal Contact -->
     <div class="modal fade" id="contactModal" tabindex="-1" role="dialog" aria-labelledby="contactModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="contactModalLabel">Contact</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            Pour toute question ou assistance, veuillez nous contacter à : <a href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-          </div>
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="contactModalLabel">Contact</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Pour toute question ou assistance, veuillez nous contacter à : <a href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-    
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-        document.getElementById('password_protect').addEventListener('change', function() {
-            const passwordField = document.getElementById('password_field');
-            if (this.checked) {
-                passwordField.style.display = 'block';
-            } else {
-                passwordField.style.display = 'none';
-            }
-        });
-
-        function copyToClipboard(button, url) {
-            const tempInput = document.createElement('input');
-            tempInput.value = url;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempInput);
-            button.classList.add('copied');
-            button.textContent = 'Lien copié';
-            alert('Lien copié dans le presse-papiers');
-
-            const deleteOnRead = document.getElementById('delete_on_read').checked;
-            const passwordProtect = document.getElementById('password_protect').checked;
-            let additionalMessage = '';
-
-            if (deleteOnRead) {
-                additionalMessage += '<p>Le lien généré sera unique et le message sera supprimé après consultation.</p>';
-            }
-
-            if (passwordProtect) {
-                additionalMessage += '<p>Veuillez bien retenir le mot de passe pour accéder au message.</p>';
-            }
-
-            document.getElementById('additional-message').innerHTML = additionalMessage;
-        }
-    </script>
 </body>
 </html>
