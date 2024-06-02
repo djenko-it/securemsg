@@ -4,69 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Message Non Trouvé</title>
+    <link href="/static/css/tailwind.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            padding-top: 70px;
-            background-color: #f8f9fa;
-            font-family: 'Arial', sans-serif;
-        }
-        .container {
-            max-width: 600px;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-        }
-        .navbar {
-            background-color: #e3e3e3b3;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .navbar-brand {
-            color: black;
-            font-weight: bold;
-        }
-        .nav-link {
-            color: black;
-            transition: color 0.3s;
-        }
-        .nav-link:hover {
-            color: #007bff;
-        }
-        .modal-content {
-            border-radius: 10px;
-        }
-        .modal-header {
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-        }
-        .modal-title {
-            font-weight: bold;
-        }
-        .modal-footer {
-            border-top: 1px solid #dee2e6;
-        }
-        .modal-body a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        .modal-body a:hover {
-            text-decoration: underline;
-        }
-    </style>
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg fixed-top">
-        <a class="navbar-brand" href="/">SecureMsg</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
+<body class="bg-gray-100 text-gray-900">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/">{{ settings.software_name }}</a>
+        <div class="collapse navbar-collapse">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/">Accueil</a>
-                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#" data-toggle="modal" data-target="#aboutModal">À propos</a>
                 </li>
@@ -76,51 +21,50 @@
             </ul>
         </div>
     </nav>
-    
-    <div class="container text-center">
-        <h1>Message Non Trouvé</h1>
-        <p class="text-muted">Le message que vous essayez de consulter n'existe pas ou a déjà été consulté.</p>
-        <a href="/" class="btn btn-primary">Retour à l'accueil</a>
+    <div class="container mt-4">
+        <div class="alert alert-danger">
+            Le message que vous cherchez n'a pas été trouvé ou a déjà été supprimé.
+        </div>
     </div>
-    
+
     <!-- Modal À propos -->
     <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="aboutModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="aboutModalLabel">À propos</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            Le but de ce site est de permettre l'envoi sécurisé de messages sensibles. Chaque message est protégé par un lien unique, et peut être configuré pour être supprimé après lecture ou après une certaine durée.
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-          </div>
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="aboutModalLabel">À propos</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Le but de ce site est de permettre l'envoi sécurisé de messages sensibles. Chaque message est protégé par un lien unique, et peut être configuré pour être supprimé après lecture ou après une certaine durée.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
 
     <!-- Modal Contact -->
     <div class="modal fade" id="contactModal" tabindex="-1" role="dialog" aria-labelledby="contactModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="contactModalLabel">Contact</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            Pour toute question ou assistance, veuillez nous contacter à : <a href="mailto:djneko-it@protonmail.com">djneko-it@protonmail.com</a>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-          </div>
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="contactModalLabel">Contact</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Pour toute question ou assistance, veuillez nous contacter à : <a href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
