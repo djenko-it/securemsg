@@ -35,4 +35,5 @@ ENV TITLE_READ_MESSAGE="Lire le Message"
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Lancer l'application
-CMD ["python", "app.py"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
+
