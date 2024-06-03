@@ -8,6 +8,7 @@ from flask_wtf import FlaskForm, CSRFProtect
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from redis import Redis
+from cryptography.fernet import Fernet
 from wtforms import PasswordField, SubmitField
 from wtforms.validators import DataRequired
 
@@ -27,6 +28,10 @@ limiter = Limiter(
 )
 
 DATABASE = '/app/messages.db'
+
+# Récupération de la clé de chiffrement depuis les variables d'environnement
+ENCRYPTION_KEY = os.environ['ENCRYPTION_KEY'].encode()
+cipher_suite = Fernet(ENCRYPTION_KEY)
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -114,6 +119,11 @@ def get_expiry_time(expiry_option):
         return datetime.now() + timedelta(days=30)
     return None
 
+# Formulaire de mot de passe
+class PasswordForm(FlaskForm):
+    password = PasswordField('Mot de passe', validators=[DataRequired()])
+    submit = SubmitField('Envoyer')
+
 def calculate_validity_duration(expiry_time):
     remaining_time = expiry_time - datetime.now()
     days = remaining_time.days
@@ -128,11 +138,11 @@ def calculate_validity_duration(expiry_time):
     else:
         return f"{seconds} secondes"
 
+def encrypt_message(message):
+    return cipher_suite.encrypt(message.encode()).decode()
 
-# Formulaire de mot de passe
-class PasswordForm(FlaskForm):
-    password = PasswordField('Mot de passe', validators=[DataRequired()])
-    submit = SubmitField('Envoyer')
+def decrypt_message(encrypted_message):
+    return cipher_suite.decrypt(encrypted_message.encode()).decode()
 
 @app.route('/')
 def index():
@@ -154,6 +164,7 @@ def contact():
 def send_message():
     settings = get_settings()
     message = request.form['message']
+    encrypted_message = encrypt_message(message)
     expiry_option = request.form['expiry']
     delete_on_read = 'delete_on_read' in request.form if 'delete_on_read' in request.form else settings['delete_on_read_default']
     password_protect = 'password_protect' in request.form if 'password_protect' in request.form else settings['password_protect_default']
@@ -164,7 +175,7 @@ def send_message():
     
     with sqlite3.connect(DATABASE) as conn:
         conn.execute('INSERT INTO messages (id, message, expiry, delete_on_read, password) VALUES (?, ?, ?, ?, ?)', 
-                     (message_id, message, expiry_time, delete_on_read, hashed_password))
+                     (message_id, encrypted_message, expiry_time, delete_on_read, hashed_password))
     
     link = url_for('view_message', message_id=message_id, _external=True)
     flash(link)
@@ -179,7 +190,7 @@ def view_message(message_id):
         row = cur.fetchone()
 
         if row:
-            message, expiry, delete_on_read, hashed_password = row
+            encrypted_message, expiry, delete_on_read, hashed_password = row
             expiry_time = datetime.strptime(expiry, '%Y-%m-%d %H:%M:%S.%f')
             time_remaining = expiry_time - datetime.now()
 
@@ -189,6 +200,7 @@ def view_message(message_id):
                 return redirect(url_for('message_expired'))
 
             time_remaining_str = calculate_validity_duration(expiry_time)
+            message = decrypt_message(encrypted_message)
 
             form = PasswordForm()
             if request.method == 'POST':
@@ -210,7 +222,6 @@ def view_message(message_id):
         else:
             flash("Le message n'a pas été trouvé ou a déjà été consulté.")
             return redirect(url_for('message_not_found'))
-
 
 @app.route('/message_not_found')
 def message_not_found():
