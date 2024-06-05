@@ -26,6 +26,11 @@
         <div class="text-center mt-4">
             <p>Durée de validité du message : <strong>{{ time_remaining }}</strong></p>
         </div>
+        {% if not delete_on_read %}
+        <div class="alert alert-info">
+            Ce message a été consulté {{ views }} fois.
+        </div>
+        {% endif %}
         {% if delete_on_read %}
         <div class="alert alert-warning mt-4">
             Ce message est unique et ne sera plus accessible une fois cette page fermée.

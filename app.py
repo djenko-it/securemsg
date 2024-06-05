@@ -49,6 +49,7 @@ def init_db():
                 expiry TIMESTAMP,
                 delete_on_read BOOLEAN,
                 password TEXT
+                views INTEGER DEFAULT 0
             )
         ''')
         conn.execute('DROP TABLE IF EXISTS settings')
@@ -186,11 +187,11 @@ def view_message(message_id):
     settings = get_settings()
     with sqlite3.connect(DATABASE) as conn:
         cur = conn.cursor()
-        cur.execute('SELECT message, expiry, delete_on_read, password FROM messages WHERE id = ?', (message_id,))
+        cur.execute('SELECT message, expiry, delete_on_read, password, views FROM messages WHERE id = ?', (message_id,))
         row = cur.fetchone()
 
         if row:
-            encrypted_message, expiry, delete_on_read, hashed_password = row
+            encrypted_message, expiry, delete_on_read, hashed_password, views = row
             expiry_time = datetime.strptime(expiry, '%Y-%m-%d %H:%M:%S.%f')
             time_remaining = expiry_time - datetime.now()
 
@@ -211,17 +212,24 @@ def view_message(message_id):
                         return render_template('password_required.html', message_id=message_id, form=form, settings=settings)
                     if delete_on_read:
                         conn.execute('DELETE FROM messages WHERE id = ?', (message_id,))
-                    return render_template('view_message.html', message=message, expiry=expiry_time.isoformat(), delete_on_read=delete_on_read, settings=settings, time_remaining=time_remaining_str)
+                    else:
+                        views += 1
+                        conn.execute('UPDATE messages SET views = ? WHERE id = ?', (views, message_id))
+                    return render_template('view_message.html', message=message, expiry=expiry_time.isoformat(), delete_on_read=delete_on_read, settings=settings, time_remaining=time_remaining_str, views=views)
             else:
                 if hashed_password:
                     return render_template('password_required.html', message_id=message_id, form=form, settings=settings)
                 else:
                     if delete_on_read:
                         conn.execute('DELETE FROM messages WHERE id = ?', (message_id,))
-                    return render_template('view_message.html', message=message, expiry=expiry_time.isoformat(), delete_on_read=delete_on_read, settings=settings, time_remaining=time_remaining_str)
+                    else:
+                        views += 1
+                        conn.execute('UPDATE messages SET views = ? WHERE id = ?', (views, message_id))
+                    return render_template('view_message.html', message=message, expiry=expiry_time.isoformat(), delete_on_read=delete_on_read, settings=settings, time_remaining=time_remaining_str, views=views)
         else:
             flash("Le message n'a pas été trouvé ou a déjà été consulté.")
             return redirect(url_for('message_not_found'))
+
 
 @app.route('/message_not_found')
 def message_not_found():
