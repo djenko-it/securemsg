@@ -5,14 +5,10 @@ services:
     build: .
     ports:
       - "5000:5000"
+    env_file:
+      - .env
     volumes:
       - .:/app
-    environment:
-      FLASK_ENV: "development"
-      SOFTWARE_NAME: "SecureMsg"
-      SHOW_DELETE_ON_READ: "true"
-      SHOW_PASSWORD_PROTECT: "true"
-      CONTACT_EMAIL: "djenko-it@protonmail.com"
-      TITLE_SEND_MESSAGE: "Envoyer un Message Sécurisé"
-      TITLE_READ_MESSAGE: "Lire le Message"
 
+  redis:
+    image: "redis:alpine"
