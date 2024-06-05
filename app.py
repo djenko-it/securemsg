@@ -48,7 +48,7 @@ def init_db():
                 message TEXT,
                 expiry TIMESTAMP,
                 delete_on_read BOOLEAN,
-                password TEXT
+                password TEXT,
                 views INTEGER DEFAULT 0
             )
         ''')
