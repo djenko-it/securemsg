@@ -99,6 +99,20 @@ def get_expiry_time(expiry_option):
         return datetime.now() + timedelta(days=30)
     return None
 
+def calculate_validity_duration(expiry_time):
+    remaining_time = expiry_time - datetime.now()
+    days = remaining_time.days
+    hours, remainder = divmod(remaining_time.seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    if days > 0:
+        return f"{days} jours, {hours} heures, {minutes} minutes"
+    elif hours > 0:
+        return f"{hours} heures, {minutes} minutes"
+    elif minutes > 0:
+        return f"{minutes} minutes"
+    else:
+        return f"{seconds} secondes"
+
 def encrypt_message(message, key):
     key = key[:32]  # Prendre les 32 premiers caractères pour une clé de 128 bits
     backend = default_backend()
@@ -166,6 +180,11 @@ def view_message(message_id):
         if row:
             encrypted_message, expiry, delete_on_read, hashed_password, views = row
 
+            # Calcul de la durée de validité restante
+            expiry_time = datetime.strptime(expiry, '%Y-%m-%d %H:%M:%S.%f')
+            time_remaining = expiry_time - datetime.now()
+            time_remaining_str = calculate_validity_duration(expiry_time)
+
             # Déchiffrement du message avec l'UUID
             try:
                 message = decrypt_message(encrypted_message, message_id)
@@ -185,7 +204,7 @@ def view_message(message_id):
                     else:
                         views += 1
                         conn.execute('UPDATE messages SET views = ? WHERE id = ?', (views, message_id))
-                    return render_template('view_message.html', message=message, expiry=expiry, delete_on_read=delete_on_read, settings=settings, views=views)
+                    return render_template('view_message.html', message=message, expiry=expiry_time.isoformat(), delete_on_read=delete_on_read, settings=settings, views=views, time_remaining=time_remaining_str)
             else:
                 if hashed_password:
                     return render_template('password_required.html', message_id=message_id, form=form, settings=settings)
@@ -195,7 +214,7 @@ def view_message(message_id):
                     else:
                         views += 1
                         conn.execute('UPDATE messages SET views = ? WHERE id = ?', (views, message_id))
-                    return render_template('view_message.html', message=message, expiry=expiry, delete_on_read=delete_on_read, settings=settings, views=views)
+                    return render_template('view_message.html', message=message, expiry=expiry_time.isoformat(), delete_on_read=delete_on_read, settings=settings, views=views, time_remaining=time_remaining_str)
         else:
             flash("Le message n'a pas été trouvé ou a déjà été supprimé.")
             return redirect(url_for('message_not_found'))
