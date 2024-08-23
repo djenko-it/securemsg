@@ -236,7 +236,7 @@ def view_message(message_id):
 @app.route('/message_not_found')
 def message_not_found():
     settings = get_settings()
-    return render_template('message_not_found.html', settings=settings)
+    return render_template('message_expired.html', settings=get_settings(), message_not_found=True)
 
 @app.route('/message_expired')
 def message_expired():

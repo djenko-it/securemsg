@@ -1,27 +1,27 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ settings.software_name }}</title>
-  <link href="/static/css/tailwind.css" rel="stylesheet">
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ settings.software_name }}{% endblock %}</title>
+    <link href="/static/css/tailwind.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
 </head>
 <body class="bg-gray-100 text-gray-900">
-  <nav class="bg-gray-800 p-4">
-    <div class="container mx-auto flex justify-between items-center">
-      <a class="text-white text-lg font-bold" href="/">{{ settings.software_name }}</a>
-      <div class="flex space-x-4">
-        <a class="text-gray-300 hover:text-white" href="/">Accueil</a>
-        <a class="text-gray-300 hover:text-white" href="#" data-toggle="modal" data-target="#aboutModal">À propos</a>
-        <a class="text-gray-300 hover:text-white" href="#" data-toggle="modal" data-target="#contactModal">Contact</a>
-      </div>
-    </div>
-  </nav>
-    <div class="container mt-4">
-        <div class="alert alert-danger">
-            Le message que vous cherchez n'a pas été trouvé ou a déjà été supprimé.
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a class="text-white text-lg font-bold" href="/">{{ settings.software_name }}</a>
+            <div class="flex space-x-4">
+                <a class="text-gray-300 hover:text-white" href="/">Accueil</a>
+                <a class="text-gray-300 hover:text-white" href="#" data-toggle="modal" data-target="#aboutModal">À propos</a>
+                <a class="text-gray-300 hover:text-white" href="#" data-toggle="modal" data-target="#contactModal">Contact</a>
+            </div>
         </div>
+    </nav>
+
+    <div class="container mt-8">
+        {% block content %}{% endblock %}
     </div>
 
     <!-- Modal À propos -->
@@ -67,5 +67,6 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
