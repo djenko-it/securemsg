@@ -178,9 +178,11 @@ def send_message():
         conn.execute('INSERT INTO messages (id, message, expiry, delete_on_read, password) VALUES (?, ?, ?, ?, ?)', 
                      (message_id, encrypted_message, expiry_time, delete_on_read, hashed_password))
     
+    # Générer le lien pour accéder au message
     link = url_for('view_message', message_id=message_id, _external=True)
-    flash(link)
-    return redirect(url_for('index'))
+    
+    # Passer le lien directement à la vue index.html
+    return render_template('index.html', settings=settings, message_link=link)
 
 @app.route('/message/<message_id>', methods=['GET', 'POST'])
 def view_message(message_id):
