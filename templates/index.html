@@ -52,18 +52,28 @@
         <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Envoyer</button>
       </div>
     </form>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class="mt-4">
-          {% for message in messages %}
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-              {{ message }}
-              <button class="btn btn-primary" onclick="copyToClipboard('{{ message }}')">Copier le lien</button>
-            </div>
-          {% endfor %}
+
+    <!-- Modale pour afficher le lien -->
+    <div class="modal fade" id="linkModal" tabindex="-1" role="dialog" aria-labelledby="linkModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="linkModalLabel">Lien de votre message</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Votre message a été créé avec succès. Utilisez le lien ci-dessous pour accéder à votre message :</p>
+            <input type="text" class="form-control" id="messageLink" value="{{ message_link }}" readonly>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" onclick="copyToClipboard()">Copier le lien</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+          </div>
         </div>
-      {% endif %}
-    {% endwith %}
+      </div>
+    </div>
   </div>
 
   <!-- Modal À propos -->
@@ -110,13 +120,20 @@
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <script>
-    function copyToClipboard(text) {
-      navigator.clipboard.writeText(text).then(function() {
-        alert('Lien copié dans le presse-papier');
-      }, function(err) {
-        alert('Erreur lors de la copie du lien');
-      });
-    }
+      // Fonction pour copier le lien dans le presse-papier
+      function copyToClipboard() {
+          var copyText = document.getElementById("messageLink");
+          copyText.select();
+          document.execCommand("copy");
+          alert("Lien copié dans le presse-papier");
+      }
+
+      // Ouvrir automatiquement le modale si un lien est généré
+      {% if message_link %}
+          $(document).ready(function() {
+              $('#linkModal').modal('show');
+          });
+      {% endif %}
   </script>
 </body>
 </html>
