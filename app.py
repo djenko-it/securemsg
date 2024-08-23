@@ -91,6 +91,7 @@ def get_expiry_time(expiry_option):
     return None
 
 def encrypt_message(message, key):
+    key = key[:32]  # Prendre les 32 premiers caractères pour une clé de 128 bits
     backend = default_backend()
     iv = os.urandom(16)
     cipher = Cipher(algorithms.AES(key.encode()), modes.CFB(iv), backend=backend)
@@ -99,6 +100,7 @@ def encrypt_message(message, key):
     return base64.urlsafe_b64encode(iv + ct).decode()
 
 def decrypt_message(encrypted_message, key):
+    key = key[:32]  # Prendre les 32 premiers caractères pour une clé de 128 bits
     backend = default_backend()
     encrypted_message = base64.urlsafe_b64decode(encrypted_message)
     iv = encrypted_message[:16]
