@@ -18,19 +18,6 @@
       <option value="1m">1 mois</option>
     </select>
   </div>
-  {% if settings.show_delete_on_read %}
-  <div class="mb-4">
-    <input type="checkbox" id="delete_on_read" name="delete_on_read">
-    <label for="delete_on_read" class="text-gray-700">Supprimer après lecture</label>
-  </div>
-  {% endif %}
-  {% if settings.show_password_protect %}
-  <div class="mb-4">
-    <input type="checkbox" id="password_protect" name="password_protect">
-    <label for="password_protect" class="text-gray-700">Protéger par mot de passe</label>
-    <input type="password" id="password" name="password" class="w-full p-2 border border-gray-300 rounded-md mt-2" placeholder="Entrez un mot de passe">
-  </div>
-  {% endif %}
   <div class="text-center">
     <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Envoyer</button>
   </div>

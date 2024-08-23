@@ -1,37 +1,15 @@
 import os
-from flask import Flask, request, redirect, render_template, url_for, flash, session, g
 import uuid
+import base64
 import sqlite3
+from flask import Flask, request, render_template, url_for, redirect, flash
 from datetime import datetime, timedelta
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_wtf import FlaskForm, CSRFProtect
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
-from redis import Redis
-from cryptography.fernet import Fernet
-from wtforms import PasswordField, SubmitField
-from wtforms.validators import DataRequired
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.backends import default_backend
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')
-csrf = CSRFProtect(app)
-
-# Configuration de Redis
-redis_client = Redis(host='redis', port=6379)
-
-# Limiter les tentatives de connexion pour éviter les attaques par force brute
-limiter = Limiter(
-    get_remote_address,
-    app=app,
-    storage_uri='redis://redis:6379',
-    default_limits=["200 per day", "50 per hour"]
-)
-
 DATABASE = '/app/messages.db'
-
-# Récupération de la clé de chiffrement depuis les variables d'environnement
-ENCRYPTION_KEY = os.environ['ENCRYPTION_KEY'].encode()
-cipher_suite = Fernet(ENCRYPTION_KEY)
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -64,14 +42,6 @@ def init_db():
                 contact_email TEXT,
                 title_send_message TEXT,
                 title_read_message TEXT
-            )
-        ''')
-        conn.execute('''
-            CREATE TABLE IF NOT EXISTS admin (
-                id INTEGER PRIMARY KEY,
-                username TEXT,
-                password TEXT,
-                must_change_password BOOLEAN
             )
         ''')
         conn.execute('''
@@ -120,118 +90,76 @@ def get_expiry_time(expiry_option):
         return datetime.now() + timedelta(days=30)
     return None
 
-# Formulaire de mot de passe
-class PasswordForm(FlaskForm):
-    password = PasswordField('Mot de passe', validators=[DataRequired()])
-    submit = SubmitField('Envoyer')
+def encrypt_message(message, key):
+    backend = default_backend()
+    iv = os.urandom(16)
+    cipher = Cipher(algorithms.AES(key.encode()), modes.CFB(iv), backend=backend)
+    encryptor = cipher.encryptor()
+    ct = encryptor.update(message.encode()) + encryptor.finalize()
+    return base64.urlsafe_b64encode(iv + ct).decode()
 
-def calculate_validity_duration(expiry_time):
-    remaining_time = expiry_time - datetime.now()
-    days = remaining_time.days
-    hours, remainder = divmod(remaining_time.seconds, 3600)
-    minutes, seconds = divmod(remainder, 60)
-    if days > 0:
-        return f"{days} jours, {hours} heures, {minutes} minutes"
-    elif hours > 0:
-        return f"{hours} heures, {minutes} minutes"
-    elif minutes > 0:
-        return f"{minutes} minutes"
-    else:
-        return f"{seconds} secondes"
-
-def encrypt_message(message):
-    return cipher_suite.encrypt(message.encode()).decode()
-
-def decrypt_message(encrypted_message):
-    return cipher_suite.decrypt(encrypted_message.encode()).decode()
+def decrypt_message(encrypted_message, key):
+    backend = default_backend()
+    encrypted_message = base64.urlsafe_b64decode(encrypted_message)
+    iv = encrypted_message[:16]
+    cipher = Cipher(algorithms.AES(key.encode()), modes.CFB(iv), backend=backend)
+    decryptor = cipher.decryptor()
+    decrypted_message = decryptor.update(encrypted_message[16:]) + decryptor.finalize()
+    return decrypted_message.decode()
 
 @app.route('/')
 def index():
     settings = get_settings()
     return render_template('index.html', settings=settings)
 
-@app.route('/about')
-def about():
-    settings = get_settings()
-    return render_template('about.html', settings=settings)
-
-@app.route('/contact')
-def contact():
-    settings = get_settings()
-    return render_template('contact.html', settings=settings)
-
 @app.route('/send', methods=['POST'])
-@csrf.exempt  # Exempt CSRF pour cette route spécifique si nécessaire
 def send_message():
     settings = get_settings()
     message = request.form['message']
-    encrypted_message = encrypt_message(message)
+
+    # Génération de l'UUID qui sert d'identifiant et de clé de chiffrement
+    encryption_key = str(uuid.uuid4())
+
+    # Chiffrement du message avec l'UUID
+    encrypted_message = encrypt_message(message, encryption_key)
+
+    # Stockage du message chiffré dans la base de données
+    message_id = encryption_key
     expiry_option = request.form['expiry']
-    delete_on_read = 'delete_on_read' in request.form if 'delete_on_read' in request.form else settings['delete_on_read_default']
-    password_protect = 'password_protect' in request.form if 'password_protect' in request.form else settings['password_protect_default']
-    password = request.form['password'] if password_protect else None
-    hashed_password = generate_password_hash(password) if password else None
-    message_id = str(uuid.uuid4())
     expiry_time = get_expiry_time(expiry_option)
-    
+
     with sqlite3.connect(DATABASE) as conn:
         conn.execute('INSERT INTO messages (id, message, expiry, delete_on_read, password) VALUES (?, ?, ?, ?, ?)', 
-                     (message_id, encrypted_message, expiry_time, delete_on_read, hashed_password))
+                     (message_id, encrypted_message, expiry_time, False, None))
     
-    # Générer le lien pour accéder au message
+    # Génération du lien à partager
     link = url_for('view_message', message_id=message_id, _external=True)
-    
-    # Passer le lien directement à la vue index.html
     return render_template('index.html', settings=settings, message_link=link)
 
 @app.route('/message/<message_id>', methods=['GET', 'POST'])
 def view_message(message_id):
     settings = get_settings()
+    
     with sqlite3.connect(DATABASE) as conn:
         cur = conn.cursor()
-        cur.execute('SELECT message, expiry, delete_on_read, password, views FROM messages WHERE id = ?', (message_id,))
+        cur.execute('SELECT message, expiry, delete_on_read, password FROM messages WHERE id = ?', (message_id,))
         row = cur.fetchone()
 
         if row:
-            encrypted_message, expiry, delete_on_read, hashed_password, views = row
-            expiry_time = datetime.strptime(expiry, '%Y-%m-%d %H:%M:%S.%f')
-            time_remaining = expiry_time - datetime.now()
+            encrypted_message, expiry, delete_on_read, password = row
 
-            if time_remaining.total_seconds() <= 0:
-                conn.execute('DELETE FROM messages WHERE id = ?', (message_id,))
-                flash("Le message a expiré.")
-                return redirect(url_for('message_expired'))
+            # Déchiffrement du message avec l'UUID
+            try:
+                message = decrypt_message(encrypted_message, message_id)
+            except Exception as e:
+                flash("Erreur de déchiffrement. Le lien est peut-être incorrect.")
+                return redirect(url_for('message_not_found'))
 
-            time_remaining_str = calculate_validity_duration(expiry_time)
-            message = decrypt_message(encrypted_message)
-
-            form = PasswordForm()
-            if request.method == 'POST':
-                if form.validate_on_submit():
-                    password = form.password.data
-                    if hashed_password and not check_password_hash(hashed_password, password):
-                        flash("Mot de passe incorrect.")
-                        return render_template('password_required.html', message_id=message_id, form=form, settings=settings)
-                    if delete_on_read:
-                        conn.execute('DELETE FROM messages WHERE id = ?', (message_id,))
-                    else:
-                        views += 1
-                        conn.execute('UPDATE messages SET views = ? WHERE id = ?', (views, message_id))
-                    return render_template('view_message.html', message=message, expiry=expiry_time.isoformat(), delete_on_read=delete_on_read, settings=settings, time_remaining=time_remaining_str, views=views)
-            else:
-                if hashed_password:
-                    return render_template('password_required.html', message_id=message_id, form=form, settings=settings)
-                else:
-                    if delete_on_read:
-                        conn.execute('DELETE FROM messages WHERE id = ?', (message_id,))
-                    else:
-                        views += 1
-                        conn.execute('UPDATE messages SET views = ? WHERE id = ?', (views, message_id))
-                    return render_template('view_message.html', message=message, expiry=expiry_time.isoformat(), delete_on_read=delete_on_read, settings=settings, time_remaining=time_remaining_str, views=views)
+            # Afficher le message
+            return render_template('view_message.html', message=message, settings=settings)
         else:
-            flash("Le message n'a pas été trouvé ou a déjà été consulté.")
+            flash("Le message n'a pas été trouvé ou a déjà été supprimé.")
             return redirect(url_for('message_not_found'))
-
 
 @app.route('/message_not_found')
 def message_not_found():
