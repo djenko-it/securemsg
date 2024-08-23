@@ -125,6 +125,12 @@ def send_message():
     # Chiffrement du message avec l'UUID
     encrypted_message = encrypt_message(message, encryption_key)
 
+    # Récupérer les options depuis le formulaire
+    delete_on_read = 'delete_on_read' in request.form if 'delete_on_read' in request.form else settings['delete_on_read_default']
+    password_protect = 'password_protect' in request.form if 'password_protect' in request.form else settings['password_protect_default']
+    password = request.form['password'] if password_protect else None
+    hashed_password = generate_password_hash(password) if password else None
+
     # Stockage du message chiffré dans la base de données
     message_id = encryption_key
     expiry_option = request.form['expiry']
@@ -132,11 +138,12 @@ def send_message():
 
     with sqlite3.connect(DATABASE) as conn:
         conn.execute('INSERT INTO messages (id, message, expiry, delete_on_read, password) VALUES (?, ?, ?, ?, ?)', 
-                     (message_id, encrypted_message, expiry_time, False, None))
+                     (message_id, encrypted_message, expiry_time, delete_on_read, hashed_password))
     
     # Génération du lien à partager
     link = url_for('view_message', message_id=message_id, _external=True)
     return render_template('index.html', settings=settings, message_link=link)
+
 
 @app.route('/message/<message_id>', methods=['GET', 'POST'])
 def view_message(message_id):
@@ -144,11 +151,11 @@ def view_message(message_id):
     
     with sqlite3.connect(DATABASE) as conn:
         cur = conn.cursor()
-        cur.execute('SELECT message, expiry, delete_on_read, password FROM messages WHERE id = ?', (message_id,))
+        cur.execute('SELECT message, expiry, delete_on_read, password, views FROM messages WHERE id = ?', (message_id,))
         row = cur.fetchone()
 
         if row:
-            encrypted_message, expiry, delete_on_read, password = row
+            encrypted_message, expiry, delete_on_read, hashed_password, views = row
 
             # Déchiffrement du message avec l'UUID
             try:
@@ -157,11 +164,33 @@ def view_message(message_id):
                 flash("Erreur de déchiffrement. Le lien est peut-être incorrect.")
                 return redirect(url_for('message_not_found'))
 
-            # Afficher le message
-            return render_template('view_message.html', message=message, settings=settings)
+            form = PasswordForm()
+            if request.method == 'POST':
+                if form.validate_on_submit():
+                    password = form.password.data
+                    if hashed_password and not check_password_hash(hashed_password, password):
+                        flash("Mot de passe incorrect.")
+                        return render_template('password_required.html', message_id=message_id, form=form, settings=settings)
+                    if delete_on_read:
+                        conn.execute('DELETE FROM messages WHERE id = ?', (message_id,))
+                    else:
+                        views += 1
+                        conn.execute('UPDATE messages SET views = ? WHERE id = ?', (views, message_id))
+                    return render_template('view_message.html', message=message, expiry=expiry, delete_on_read=delete_on_read, settings=settings, views=views)
+            else:
+                if hashed_password:
+                    return render_template('password_required.html', message_id=message_id, form=form, settings=settings)
+                else:
+                    if delete_on_read:
+                        conn.execute('DELETE FROM messages WHERE id = ?', (message_id,))
+                    else:
+                        views += 1
+                        conn.execute('UPDATE messages SET views = ? WHERE id = ?', (views, message_id))
+                    return render_template('view_message.html', message=message, expiry=expiry, delete_on_read=delete_on_read, settings=settings, views=views)
         else:
             flash("Le message n'a pas été trouvé ou a déjà été supprimé.")
             return redirect(url_for('message_not_found'))
+
 
 @app.route('/message_not_found')
 def message_not_found():
