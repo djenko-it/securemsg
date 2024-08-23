@@ -6,10 +6,18 @@ from flask import Flask, request, render_template, url_for, redirect, flash, g
 from datetime import datetime, timedelta
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
+from flask_wtf import FlaskForm
+from wtforms import PasswordField, SubmitField
+from wtforms.validators import DataRequired
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')
 DATABASE = '/app/messages.db'
+
+# Définition de PasswordForm
+class PasswordForm(FlaskForm):
+    password = PasswordField('Mot de passe', validators=[DataRequired()])
+    submit = SubmitField('Envoyer')
 
 def get_db():
     db = getattr(g, '_database', None)
