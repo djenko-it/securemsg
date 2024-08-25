@@ -1,10 +1,11 @@
+import os
 from flask import Flask
 from .config import Config
 from .routes import main_blueprint
 from .models import init_db
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, template_folder=os.path.abspath('templates'))
     app.config.from_object(Config)
 
     # Initialiser la base de données
