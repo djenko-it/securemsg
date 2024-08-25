@@ -34,9 +34,10 @@ ENV TITLE_READ_MESSAGE="Lire le Message"
 # Utiliser le script d'entrée
 ENTRYPOINT ["/entrypoint.sh"]
 
-# Lancer l'application
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
+# Lancer l'application avec Gunicorn
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "run:app"]
 
 #Lancement en Flask
-
-#CMD ["python", "app.py"]
+# Si tu préfères utiliser Flask en mode développement, tu peux commenter la ligne Gunicorn
+# et décommenter la suivante :
+# CMD ["python", "run.py"]
