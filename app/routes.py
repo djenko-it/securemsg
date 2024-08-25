@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from .models import get_settings, encrypt_message, decrypt_message, save_message, get_message
+from .models import get_settings, save_message, get_message
+from .utils import encrypt_message, decrypt_message
 from .forms import PasswordForm, SendMessageForm
 
 main_blueprint = Blueprint('main', __name__)
