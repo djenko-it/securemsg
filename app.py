@@ -15,10 +15,12 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')
 DATABASE = '/app/messages.db'
 
-# Définition de PasswordForm
+# Définition de PasswordForm pour la saisie sécurisée du mot de passe par l'utilisateur
 class PasswordForm(FlaskForm):
     password = PasswordField('Mot de passe', validators=[DataRequired()])
     submit = SubmitField('Envoyer')
+
+# Fonction pour obtenir une connexion à la base de données SQLite.
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -26,6 +28,10 @@ def get_db():
         db = g._database = sqlite3.connect(DATABASE, timeout=10, check_same_thread=False)
     return db
 
+
+# Initialisation de la base de données, création des tables nécessaires
+
+        # Supprime la table messages si elle existe déjà et la recrée.
 def init_db():
     with sqlite3.connect(DATABASE) as conn:
         conn.execute('DROP TABLE IF EXISTS messages')
@@ -39,6 +45,7 @@ def init_db():
                 views INTEGER DEFAULT 0
             )
         ''')
+        # Supprime la table settings si elle existe déjà et la recrée.
         conn.execute('DROP TABLE IF EXISTS settings')
         conn.execute('''
             CREATE TABLE settings (
@@ -53,6 +60,7 @@ def init_db():
                 title_read_message TEXT
             )
         ''')
+        # Insère les paramètres par défaut dans la table settings.        
         conn.execute('''
             INSERT INTO settings (software_name, delete_on_read_default, password_protect_default, show_delete_on_read, show_password_protect, contact_email, title_send_message, title_read_message)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -67,12 +75,14 @@ def init_db():
             os.environ.get('TITLE_READ_MESSAGE', 'Lire le Message')
         ))
 
+# Fermeture de la connexion à la base de données après chaque requête.
 @app.teardown_appcontext
 def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
 
+# Récupère les paramètres de configuration de l'application à partir de la base de données.
 def get_settings():
     db = get_db()
     cur = db.execute('SELECT software_name, delete_on_read_default, password_protect_default, show_delete_on_read, show_password_protect, contact_email, title_send_message, title_read_message FROM settings WHERE id = 1')
@@ -88,6 +98,7 @@ def get_settings():
         'title_read_message': settings[7]
     }
 
+# Détermine le délai d'expiration du message en fonction de l'option choisie par l'utilisateur.
 def get_expiry_time(expiry_option):
     if expiry_option == '3h':
         return datetime.now() + timedelta(hours=3)
@@ -99,6 +110,7 @@ def get_expiry_time(expiry_option):
         return datetime.now() + timedelta(days=30)
     return None
 
+# Calcule la durée restante avant l'expiration d'un message.
 def calculate_validity_duration(expiry_time):
     remaining_time = expiry_time - datetime.now()
     days = remaining_time.days
@@ -113,6 +125,7 @@ def calculate_validity_duration(expiry_time):
     else:
         return f"{seconds} secondes"
 
+# Fonction pour chiffrer un message avec AES en mode CFB.
 def encrypt_message(message, key):
     key = key[:32]  # Prendre les 32 premiers caractères pour une clé de 128 bits
     backend = default_backend()
@@ -122,6 +135,7 @@ def encrypt_message(message, key):
     ct = encryptor.update(message.encode()) + encryptor.finalize()
     return base64.urlsafe_b64encode(iv + ct).decode()
 
+# Fonction pour déchiffrer un message chiffré avec AES en mode CFB.
 def decrypt_message(encrypted_message, key):
     key = key[:32]  # Prendre les 32 premiers caractères pour une clé de 128 bits
     backend = default_backend()
@@ -132,6 +146,7 @@ def decrypt_message(encrypted_message, key):
     decrypted_message = decryptor.update(encrypted_message[16:]) + decryptor.finalize()
     return decrypted_message.decode()
 
+# Route pour afficher la page d'accueil et les paramètres de configuration.
 @app.route('/')
 def index():
     settings = get_settings()
