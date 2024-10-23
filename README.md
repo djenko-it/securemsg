@@ -2,9 +2,9 @@
 
 Utilisation
 
-Générer la clé de chiffrement : 
+Generate a key : 
 
-Exemple
+Example
 
 ```
 python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
@@ -12,9 +12,12 @@ python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().
 I0hqk3P_7GePKzed8-Q5WB9R52tOC1HtLzwFqleUD4E=
 ```
 
-Build le docker 
+Build the  docker 
+
 ```
 docker compose build
 
 docker compose ud -d
 ```
+
+Modification de sécurité
