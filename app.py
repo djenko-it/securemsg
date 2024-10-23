@@ -125,26 +125,23 @@ def calculate_validity_duration(expiry_time):
     else:
         return f"{seconds} secondes"
 
-# Fonction pour chiffrer un message avec AES en mode CFB.
 def encrypt_message(message, key):
-    key = key[:32]  # Prendre les 32 premiers caractères pour une clé de 128 bits
-    backend = default_backend()
-    iv = os.urandom(16)
-    cipher = Cipher(algorithms.AES(key.encode()), modes.CFB(iv), backend=backend)
+    key = key[:32]  # Limite la clé à 32 octets pour AES-256.
+    iv = os.urandom(12)  # GCM nécessite un IV de 96 bits.
+    cipher = Cipher(algorithms.AES(key.encode()), modes.GCM(iv), backend=default_backend())
     encryptor = cipher.encryptor()
-    ct = encryptor.update(message.encode()) + encryptor.finalize()
-    return base64.urlsafe_b64encode(iv + ct).decode()
+    ciphertext = encryptor.update(message.encode()) + encryptor.finalize()
+    return base64.urlsafe_b64encode(iv + encryptor.tag + ciphertext).decode()
 
-# Fonction pour déchiffrer un message chiffré avec AES en mode CFB.
 def decrypt_message(encrypted_message, key):
-    key = key[:32]  # Prendre les 32 premiers caractères pour une clé de 128 bits
-    backend = default_backend()
-    encrypted_message = base64.urlsafe_b64decode(encrypted_message)
-    iv = encrypted_message[:16]
-    cipher = Cipher(algorithms.AES(key.encode()), modes.CFB(iv), backend=backend)
+    key = key[:32]  # Limite la clé à 32 octets pour AES-256.
+    decoded_message = base64.urlsafe_b64decode(encrypted_message)
+    iv = decoded_message[:12]  # Le IV est dans les 12 premiers octets.
+    tag = decoded_message[12:28]  # Le tag GCM est sur 16 octets.
+    ciphertext = decoded_message[28:]  # Le reste est le texte chiffré.
+    cipher = Cipher(algorithms.AES(key.encode()), modes.GCM(iv, tag), backend=default_backend())
     decryptor = cipher.decryptor()
-    decrypted_message = decryptor.update(encrypted_message[16:]) + decryptor.finalize()
-    return decrypted_message.decode()
+    return decryptor.update(ciphertext) + decryptor.finalize()
 
 # Route pour afficher la page d'accueil et les paramètres de configuration.
 @app.route('/')
