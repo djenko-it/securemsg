@@ -53,6 +53,3 @@ ENTRYPOINT ["/entrypoint.sh"]
 
 # Étape 12 : Lancer l'application avec Gunicorn
 CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
-
-# Étape 13 : Option pour exécuter avec Flask uniquement pour débogage
-# CMD ["python", "app.py"]
