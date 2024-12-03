@@ -26,9 +26,12 @@
   {% endif %}
   {% if settings.show_password_protect %}
   <div class="mb-4">
-    <input type="checkbox" id="password_protect" name="password_protect">
+    <input type="checkbox" id="password_protect" name="password_protect" onclick="togglePasswordField()">
     <label for="password_protect" class="text-gray-700">Protéger par mot de passe</label>
-    <input type="password" id="password" name="password" class="w-full p-2 border border-gray-300 rounded-md mt-2" placeholder="Entrez un mot de passe">
+    <!-- Champ mot de passe initialement masqué -->
+    <div id="password_field" style="display: none; margin-top: 10px;">
+      <input type="password" id="password" name="password" class="w-full p-2 border border-gray-300 rounded-md mt-2" placeholder="Entrez un mot de passe">
+    </div>
   </div>
   {% endif %}
   <div class="text-center">
@@ -61,6 +64,19 @@
 
 {% block extra_js %}
 <script>
+      // Fonction pour afficher ou masquer le champ de mot de passe
+      function togglePasswordField() {
+        var passwordCheckbox = document.getElementById("password_protect");
+        var passwordField = document.getElementById("password_field");
+
+        if (passwordCheckbox.checked) {
+            // Si la case est cochée, afficher le champ mot de passe
+            passwordField.style.display = "block";
+        } else {
+            // Sinon, masquer le champ mot de passe
+            passwordField.style.display = "none";
+        }
+    }
     // Fonction pour copier le lien dans le presse-papier
     function copyToClipboard() {
         var copyText = document.getElementById("messageLink");
