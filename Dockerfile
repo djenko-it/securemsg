@@ -1,5 +1,5 @@
 # Étape 1 : Utiliser une image Python Alpine comme base
-FROM python:3.12.8-alpine
+FROM python:3.12.7-alpine
 
 # Étape 2 : Installer les dépendances système
 RUN apk add --no-cache \
