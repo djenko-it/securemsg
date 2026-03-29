@@ -1,0 +1,18 @@
+# Ignorer les fichiers de base de données
+messages.db
+
+# Ignorer les fichiers de configuration locaux
+.env
+
+# Ignorer les fichiers Python compilés
+__pycache__/
+*.py[cod]
+
+# Ignorer les fichiers de dépendances
+node_modules/
+
+# Ignorer les fichiers de build
+static/css/tailwind.css
+
+# Ignorer les fichiers de log
+*.log
