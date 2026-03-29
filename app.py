@@ -15,6 +15,9 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')
 DATABASE = '/app/messages.db'
 
+# Initialisation de la base de données au démarrage de l'application
+init_db()
+
 # Définition de PasswordForm pour la saisie sécurisée du mot de passe par l'utilisateur
 class PasswordForm(FlaskForm):
     password = PasswordField('Mot de passe', validators=[DataRequired()])
@@ -243,5 +246,4 @@ def message_expired():
     return render_template('message_expired.html', settings=settings)
 
 if __name__ == '__main__':
-    init_db()
     app.run(host='0.0.0.0', port=5000, debug=True)
