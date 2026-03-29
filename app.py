@@ -15,9 +15,6 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')
 DATABASE = '/app/messages.db'
 
-# Initialisation de la base de données au démarrage de l'application
-init_db()
-
 # Définition de PasswordForm pour la saisie sécurisée du mot de passe par l'utilisateur
 class PasswordForm(FlaskForm):
     password = PasswordField('Mot de passe', validators=[DataRequired()])
@@ -77,6 +74,9 @@ def init_db():
             os.environ.get('TITLE_SEND_MESSAGE', 'Envoyer un Message Sécurisé'),
             os.environ.get('TITLE_READ_MESSAGE', 'Lire le Message')
         ))
+
+# Initialisation de la base de données au démarrage de l'application
+init_db()
 
 # Fermeture de la connexion à la base de données après chaque requête.
 @app.teardown_appcontext
