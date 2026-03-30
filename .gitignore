@@ -1,4 +1,5 @@
 # Ignorer les fichiers de base de données
+data/
 messages.db
 
 # Ignorer les fichiers de configuration locaux

@@ -13,7 +13,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')
-DATABASE = '/app/messages.db'
+DATABASE = '/app/data/messages.db'
 
 # Définition de PasswordForm pour la saisie sécurisée du mot de passe par l'utilisateur
 class PasswordForm(FlaskForm):
