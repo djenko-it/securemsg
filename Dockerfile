@@ -16,11 +16,11 @@ RUN apk add --no-cache \
 # Étape 3 : Définir le répertoire de travail
 WORKDIR /app
 
-# Étape 4 : Copier uniquement les fichiers nécessaires pour installer les dépendances
+# Étape 4 : Copier les fichiers nécessaires pour installer les dépendances
 COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
-
 COPY package*.json ./
+COPY src/ ./src/
+RUN pip install --no-cache-dir -r requirements.txt
 RUN npm install
 
 # Étape 5 : Compiler le CSS avec Tailwind
