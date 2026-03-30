@@ -7,58 +7,58 @@
     <link href="/static/css/tailwind.css" rel="stylesheet">
     {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-gray-100 text-gray-900">
-    <nav class="bg-gray-800 p-4">
+<body class="bg-gray-50 text-gray-900 font-sans">
+    <nav class="bg-gray-800 p-4 shadow-md">
         <div class="container mx-auto flex justify-between items-center">
-            <a class="text-white text-lg font-bold" href="/">{{ settings.software_name }}</a>
-            <div class="flex space-x-4">
-                <a class="text-gray-300 hover:text-white" href="/">Accueil</a>
-                <a class="text-gray-300 hover:text-white" href="#" onclick="openModal('aboutModal')">À propos</a>
-                <a class="text-gray-300 hover:text-white" href="#" onclick="openModal('contactModal')">Contact</a>
+            <a class="text-white text-xl font-bold" href="/">{{ settings.software_name }}</a>
+            <div class="flex space-x-6">
+                <a class="text-gray-300 hover:text-white transition-colors duration-200" href="/">Accueil</a>
+                <a class="text-gray-300 hover:text-white transition-colors duration-200" href="#" onclick="openModal('aboutModal')">À propos</a>
+                <a class="text-gray-300 hover:text-white transition-colors duration-200" href="#" onclick="openModal('contactModal')">Contact</a>
             </div>
         </div>
     </nav>
 
-    <div class="container mt-8">
+    <div class="container mx-auto mt-8 px-4">
         {% block content %}{% endblock %}
     </div>
 
     <!-- Modal À propos -->
-    <div id="aboutModal" class="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center hidden">
-        <div class="relative p-8 bg-white w-full max-w-md m-auto flex-col flex rounded-lg">
-            <div class="flex justify-between items-center pb-3">
-                <h5 class="text-lg font-bold">À propos</h5>
-                <button type="button" class="text-gray-500 hover:text-gray-700" onclick="closeModal('aboutModal')">
-                    <span class="text-2xl">&times;</span>
+    <div id="aboutModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="text-xl font-bold text-gray-800">À propos</h5>
+                <button type="button" class="text-gray-500 hover:text-gray-700 transition-colors duration-200" onclick="closeModal('aboutModal')">
+                    <span class="text-3xl">&times;</span>
                 </button>
             </div>
-            <div class="py-4">
-                <p class="text-gray-700">
+            <div class="modal-body">
+                <p class="text-gray-700 text-base leading-relaxed">
                     Le but de ce site est de permettre l'envoi sécurisé de messages sensibles. Chaque message est protégé par un lien unique, et peut être configuré pour être supprimé après lecture ou après une certaine durée.
                 </p>
             </div>
-            <div class="flex justify-end pt-3">
-                <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600" onclick="closeModal('aboutModal')">Fermer</button>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeModal('aboutModal')">Fermer</button>
             </div>
         </div>
     </div>
 
     <!-- Modal Contact -->
-    <div id="contactModal" class="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center hidden">
-        <div class="relative p-8 bg-white w-full max-w-md m-auto flex-col flex rounded-lg">
-            <div class="flex justify-between items-center pb-3">
-                <h5 class="text-lg font-bold">Contact</h5>
-                <button type="button" class="text-gray-500 hover:text-gray-700" onclick="closeModal('contactModal')">
-                    <span class="text-2xl">&times;</span>
+    <div id="contactModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="text-xl font-bold text-gray-800">Contact</h5>
+                <button type="button" class="text-gray-500 hover:text-gray-700 transition-colors duration-200" onclick="closeModal('contactModal')">
+                    <span class="text-3xl">&times;</span>
                 </button>
             </div>
-            <div class="py-4">
-                <p class="text-gray-700">
-                    Pour toute question ou assistance, veuillez nous contacter à : <a href="mailto:{{ settings.contact_email }}" class="text-blue-500 hover:underline">{{ settings.contact_email }}</a>
+            <div class="modal-body">
+                <p class="text-gray-700 text-base leading-relaxed">
+                    Pour toute question ou assistance, veuillez nous contacter à : <a href="mailto:{{ settings.contact_email }}" class="text-blue-600 hover:underline font-medium">{{ settings.contact_email }}</a>
                 </p>
             </div>
-            <div class="flex justify-end pt-3">
-                <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600" onclick="closeModal('contactModal')">Fermer</button>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeModal('contactModal')">Fermer</button>
             </div>
         </div>
     </div>
