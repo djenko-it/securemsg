@@ -40,23 +40,32 @@
 </form>
 
 <!-- Modale pour afficher le lien -->
-<div class="modal fade" id="linkModal" tabindex="-1" role="dialog" aria-labelledby="linkModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="linkModalLabel">Lien de votre message</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+<div id="linkModal" class="modal-overlay hidden" onclick="closeLinkModal()">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="text-2xl font-bold text-gray-800">Lien de votre message</h2>
+      <button type="button" class="btn-close" onclick="closeLinkModal()">
+        <span class="sr-only">Fermer</span>
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="prose prose-gray max-w-none">
+        <p class="text-gray-700 text-lg leading-relaxed mb-4">
+          Votre message a été créé avec succès. Utilisez le lien ci-dessous pour accéder à votre message :
+        </p>
+        <div class="flex items-center gap-4">
+          <input type="text" class="form-input flex-1" id="messageLink" value="{{ message_link }}" readonly>
+          <button type="button" class="btn-primary" onclick="copyToClipboard()">
+            <span>Copier le lien</span>
+          </button>
+        </div>
       </div>
-      <div class="modal-body">
-        <p>Votre message a été créé avec succès. Utilisez le lien ci-dessous pour accéder à votre message :</p>
-        <input type="text" class="form-control" id="messageLink" value="{{ message_link }}" readonly>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" onclick="copyToClipboard()">Copier le lien</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" onclick="closeLinkModal()">
+        <span>Fermer</span>
+      </button>
     </div>
   </div>
 </div>
@@ -64,8 +73,8 @@
 
 {% block extra_js %}
 <script>
-      // Fonction pour afficher ou masquer le champ de mot de passe
-      function togglePasswordField() {
+    // Fonction pour afficher ou masquer le champ de mot de passe
+    function togglePasswordField() {
         var passwordCheckbox = document.getElementById("password_protect");
         var passwordField = document.getElementById("password_field");
 
@@ -77,6 +86,7 @@
             passwordField.style.display = "none";
         }
     }
+
     // Fonction pour copier le lien dans le presse-papier
     function copyToClipboard() {
         var copyText = document.getElementById("messageLink");
@@ -85,10 +95,20 @@
         alert("Lien copié dans le presse-papier");
     }
 
-    // Ouvrir automatiquement le modale si un lien est généré
+    // Fonction pour ouvrir la modale du lien
+    function openLinkModal() {
+        document.getElementById('linkModal').classList.remove('hidden');
+    }
+
+    // Fonction pour fermer la modale du lien
+    function closeLinkModal() {
+        document.getElementById('linkModal').classList.add('hidden');
+    }
+
+    // Ouvrir automatiquement la modale si un lien est généré
     {% if message_link %}
-        $(document).ready(function() {
-            $('#linkModal').modal('show');
+        document.addEventListener('DOMContentLoaded', function() {
+            openLinkModal();
         });
     {% endif %}
 </script>
