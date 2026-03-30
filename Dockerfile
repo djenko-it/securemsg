@@ -18,13 +18,10 @@ WORKDIR /app
 
 # Étape 4 : Copier les fichiers nécessaires pour installer les dépendances
 COPY requirements.txt ./
-COPY package*.json ./
-COPY src/ ./src/
 RUN pip install --no-cache-dir -r requirements.txt
-RUN npm install
 
-# Étape 5 : Compiler le CSS avec Tailwind
-RUN npx tailwindcss -i ./src/tailwind.css -o ./static/css/tailwind.css
+# Étape 5 : Copier le CSS compilé
+COPY static/css/tailwind.css static/css/tailwind.css
 
 # Étape 6 : Copier le reste de l'application
 COPY . .

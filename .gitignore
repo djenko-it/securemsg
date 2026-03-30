@@ -12,7 +12,7 @@ __pycache__/
 node_modules/
 
 # Ignorer les fichiers de build
-static/css/tailwind.css
+# static/css/tailwind.css
 
 # Ignorer les fichiers de log
 *.log
