@@ -23,8 +23,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY package*.json ./
 RUN npm install
 
-# Étape 5 : Forcer la mise à jour de @babel/traverse
-RUN npm install @babel/traverse@^7.23.2
+# Étape 5 : Compiler le CSS avec Tailwind
+RUN npx tailwindcss -i ./src/tailwind.css -o ./static/css/tailwind.css
 
 # Étape 6 : Copier le reste de l'application
 COPY . .

@@ -1,8 +1,5 @@
 #!/bin/sh
-# Entrypoint script to build CSS and start the Flask application
-
-# Build the Tailwind CSS
-npm run build:css
+# Entrypoint script to start the Flask application
 
 # Initialiser la base de données uniquement si elle n'existe pas
 if [ ! -f "/app/messages.db" ]; then
