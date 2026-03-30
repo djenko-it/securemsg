@@ -31,7 +31,7 @@ COPY . .
 
 # Étape 7 : Nettoyer les fichiers inutiles pour réduire la taille
 RUN apk del --no-cache gcc musl-dev libffi-dev build-base python3-dev && \
-    rm -rf /var/cache/apk/* /root/.cache /tmp/* /app/node_modules
+    rm -rf /var/cache/apk/* /root/.cache /tmp/*
 
 # Étape 8 : Copier le script d'entrée et définir les permissions
 COPY entrypoint.sh /entrypoint.sh
