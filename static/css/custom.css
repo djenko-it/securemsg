@@ -1,0 +1,319 @@
+/* Custom classes missing from tailwind.css */
+
+/* Arbitrary background gradients */
+.bg-\[radial-gradient\(ellipse_80\%_50\%_at_50\%_-20\%,rgba\(120,119,198,0.15\),transparent\)\] {
+    background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(120,119,198,0.15), transparent);
+}
+
+.dark .dark\:bg-\[radial-gradient\(ellipse_80\%_50\%_at_50\%_-20\%,rgba\(120,119,198,0.1\),transparent\)\] {
+    background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(120,119,198,0.1), transparent);
+}
+
+/* Background colors with opacity */
+.bg-black\/60 {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.bg-white\/50 {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.bg-white\/80 {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Dark mode background colors with opacity */
+.dark .dark\:bg-blue-900\/10 {
+    background-color: rgba(30, 58, 138, 0.1);
+}
+
+.dark .dark\:bg-blue-900\/20 {
+    background-color: rgba(30, 58, 138, 0.2);
+}
+
+.dark .dark\:bg-blue-900\/30 {
+    background-color: rgba(30, 58, 138, 0.3);
+}
+
+.dark .dark\:bg-gray-700 {
+    background-color: rgb(55, 65, 81);
+}
+
+.dark .dark\:bg-gray-800 {
+    background-color: rgb(38, 38, 38);
+}
+
+.dark .dark\:bg-gray-800\/50 {
+    background-color: rgba(38, 38, 38, 0.5);
+}
+
+.dark .dark\:bg-gray-900 {
+    background-color: rgb(17, 24, 39);
+}
+
+.dark .dark\:bg-gray-900\/80 {
+    background-color: rgba(17, 24, 39, 0.8);
+}
+
+.dark .dark\:bg-gray-950 {
+    background-color: rgb(10, 10, 10);
+}
+
+.dark .dark\:bg-green-900\/20 {
+    background-color: rgba(22, 78, 99, 0.2);
+}
+
+.dark .dark\:bg-green-900\/30 {
+    background-color: rgba(22, 78, 99, 0.3);
+}
+
+.dark .dark\:bg-purple-900\/30 {
+    background-color: rgba(76, 29, 149, 0.3);
+}
+
+.dark .dark\:bg-red-900\/20 {
+    background-color: rgba(127, 29, 29, 0.2);
+}
+
+/* Transform utilities */
+.-translate-y-1\/2 {
+    transform: translateY(-50%);
+}
+
+.top-1\/2 {
+    top: 50%;
+}
+
+/* Border colors for dark mode */
+.dark .dark\:border-gray-600 {
+    border-color: rgb(75, 85, 99);
+}
+
+.dark .dark\:border-gray-700 {
+    border-color: rgb(55, 65, 81);
+}
+
+.dark .dark\:border-gray-800 {
+    border-color: rgb(38, 38, 38);
+}
+
+/* Focus ring for dark mode */
+.dark .dark\:focus\:ring-offset-gray-900:focus {
+    --tw-ring-offset-color: rgb(17, 24, 39);
+}
+
+/* Gradient colors for dark mode */
+.dark .dark\:from-gray-800 {
+    --tw-gradient-from: rgb(38, 38, 38);
+}
+
+.dark .dark\:from-gray-900 {
+    --tw-gradient-from: rgb(17, 24, 39);
+}
+
+.dark .dark\:to-gray-800 {
+    --tw-gradient-to: rgb(38, 38, 38);
+}
+
+.dark .dark\:to-gray-900 {
+    --tw-gradient-to: rgb(17, 24, 39);
+}
+
+/* Hover colors for dark mode */
+.dark .dark\:hover\:bg-gray-600:hover {
+    background-color: rgb(75, 85, 99);
+}
+
+.dark .dark\:hover\:bg-gray-700:hover {
+    background-color: rgb(55, 65, 81);
+}
+
+.dark .dark\:hover\:text-blue-400:hover {
+    color: rgb(165, 209, 252);
+}
+
+.dark .dark\:hover\:text-gray-300:hover {
+    color: rgb(209, 213, 219);
+}
+
+/* Text colors for dark mode */
+.dark .dark\:text-blue-300 {
+    color: rgb(147, 197, 253);
+}
+
+.dark .dark\:text-blue-400 {
+    color: rgb(165, 209, 252);
+}
+
+.dark .dark\:text-gray-100 {
+    color: rgb(243, 244, 246);
+}
+
+.dark .dark\:text-gray-200 {
+    color: rgb(229, 231, 235);
+}
+
+.dark .dark\:text-gray-300 {
+    color: rgb(209, 213, 219);
+}
+
+.dark .dark\:text-gray-400 {
+    color: rgb(156, 163, 175);
+}
+
+.dark .dark\:text-gray-500 {
+    color: rgb(107, 114, 128);
+}
+
+.dark .dark\:text-green-300 {
+    color: rgb(110, 231, 183);
+}
+
+.dark .dark\:text-green-400 {
+    color: rgb(74, 222, 128);
+}
+
+.dark .dark\:text-purple-400 {
+    color: rgb(192, 132, 252);
+}
+
+.dark .dark\:text-red-300 {
+    color: rgb(248, 113, 113);
+}
+
+.dark .dark\:text-red-400 {
+    color: rgb(239, 68, 68);
+}
+
+.dark .dark\:text-white {
+    color: rgb(255, 255, 255);
+}
+
+/* Placeholder colors for dark mode */
+.dark .dark\:placeholder-gray-400::placeholder {
+    color: rgb(156, 163, 175);
+}
+
+/* Focus utilities */
+.focus\:border-transparent:focus {
+    border-color: transparent;
+}
+
+.focus\:outline-none:focus {
+    outline: none;
+}
+
+.focus\:ring-2:focus {
+    --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+    --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+    box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
+.focus\:ring-amber-500:focus {
+    --tw-ring-color: rgb(215, 155, 13 / var(--tw-ring-opacity, 1));
+}
+
+.focus\:ring-blue-500:focus {
+    --tw-ring-color: rgb(59, 130, 246 / var(--tw-ring-opacity, 1));
+}
+
+.focus\:ring-offset-2:focus {
+    --tw-ring-offset-width: 2px;
+}
+
+/* Hover utilities */
+.hover\:bg-blue-700:hover {
+    background-color: rgb(29, 78, 216);
+}
+
+.hover\:bg-gray-200:hover {
+    background-color: rgb(229, 231, 235);
+}
+
+.hover\:bg-gray-300:hover {
+    background-color: rgb(209, 213, 219);
+}
+
+.hover\:from-amber-600:hover {
+    --tw-gradient-from: rgb(217, 119, 6) var(--tw-gradient-from-position);
+}
+
+.hover\:from-blue-700:hover {
+    --tw-gradient-from: rgb(29, 78, 216) var(--tw-gradient-from-position);
+}
+
+.hover\:scale-\[1.02\]:hover {
+    --tw-scale-x: 1.02;
+    --tw-scale-y: 1.02;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.hover\:shadow-lg:hover {
+    --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.hover\:shadow-md:hover {
+    --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.hover\:shadow-xl:hover {
+    --tw-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --tw-shadow-colored: 0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.hover\:text-blue-600:hover {
+    color: rgb(37, 99, 235);
+}
+
+.hover\:text-gray-600:hover {
+    color: rgb(75, 85, 99);
+}
+
+.hover\:to-orange-700:hover {
+    --tw-gradient-to: rgb(194, 65, 12) var(--tw-gradient-to-position);
+}
+
+.hover\:to-purple-700:hover {
+    --tw-gradient-to: rgb(126, 34, 206) var(--tw-gradient-to-position);
+}
+
+/* Responsive utilities */
+@media (min-width: 640px) {
+    .sm\:flex-row {
+        flex-direction: row;
+    }
+    .sm\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .sm\:px-6 {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+    .sm\:text-5xl {
+        font-size: 3rem;
+        line-height: 1;
+    }
+}
+
+@media (min-width: 768px) {
+    .md\:grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .lg\:px-8 {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+}
+
+/* Min height utility */
+.min-h-\[150px\] {
+    min-height: 150px;
+}
