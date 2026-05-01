@@ -3,100 +3,276 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ settings.software_name }} - Envoyez des messages sécurisés et chiffrés">
     <title>{% block title %}{{ settings.software_name }}{% endblock %}</title>
-    <link href="/static/css/tailwind.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+    <link href="/static/css/custom.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-gray-50 text-gray-900 font-sans antialiased">
-    <nav class="bg-gradient-to-r from-gray-800 to-gray-900 p-4 shadow-lg">
-        <div class="container mx-auto flex justify-between items-center">
-            <a class="text-white text-2xl font-bold tracking-wide" href="/">{{ settings.software_name }}</a>
-            <div class="flex items-center space-x-8">
-                <a class="nav-link" href="/">Accueil</a>
-                <a class="nav-link" href="#" onclick="openModal('aboutModal')">À propos</a>
-                <a class="nav-link" href="#" onclick="openModal('contactModal')">Contact</a>
+<body class="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans antialiased transition-colors duration-300">
+    <!-- Background pattern - pointer-events-none pour ne pas bloquer les clics -->
+    <div class="fixed inset-0 pointer-events-none" style="z-index: -1;">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(120,119,198,0.15),transparent)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(120,119,198,0.1),transparent)]"></div>
+    
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a class="flex items-center space-x-3" href="/">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center shadow-lg">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{{ settings.software_name }}</span>
+                </a>
+                
+                <div class="flex items-center space-x-6">
+                    <a class="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium" href="/">Accueil</a>
+                    <button onclick="openModal('aboutModal')" class="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium flex items-center space-x-1">
+                        <span>À propos</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </button>
+                    <button onclick="openModal('contactModal')" class="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium flex items-center space-x-1">
+                        <span>Contact</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                    </button>
+                    
+                    <!-- Dark mode toggle -->
+                    <button id="themeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors" onclick="toggleTheme()">
+                        <svg id="themeIcon" class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
 
-    <main class="container mx-auto mt-12 px-4 py-8">
+    <!-- Main content -->
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         {% block content %}{% endblock %}
     </main>
 
+    <!-- Toast notifications -->
+    <div id="toastContainer" class="fixed top-16 right-4 z-50 space-y-2"></div>
+
     <!-- Modal À propos -->
-    <div id="aboutModal" class="modal-overlay hidden" onclick="closeModal('aboutModal')">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <h2 class="text-2xl font-bold text-gray-800">À propos de {{ settings.software_name }}</h2>
-                <button type="button" class="btn-close" onclick="closeModal('aboutModal')">
-                    <span class="sr-only">Fermer</span>
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+    <div id="aboutModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden transition-opacity" onclick="closeModal('aboutModal')">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-2xl w-full p-8 transform transition-all scale-95" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">À propos de {{ settings.software_name }}</h2>
+                    <div class="w-16 h-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"></div>
+                </div>
+                <button onclick="closeModal('aboutModal')" class="p-2 -mr-2 -mt-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                    <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
                 </button>
             </div>
-            <div class="modal-body">
-                <div class="prose prose-gray max-w-none">
-                    <p class="text-gray-700 text-lg leading-relaxed mb-4">
-                        <strong>{{ settings.software_name }}</strong> est une plateforme sécurisée conçue pour l'envoi de messages sensibles. Chaque message est protégé par un lien unique et peut être configuré pour être automatiquement supprimé après lecture ou après une certaine durée.
-                    </p>
-                    <p class="text-gray-700 text-lg leading-relaxed mb-4">
-                        Notre mission est de fournir une solution simple, sécurisée et fiable pour partager des informations confidentielles en toute tranquillité d'esprit.
-                    </p>
-                    <p class="text-gray-700 text-lg leading-relaxed">
-                        Que ce soit pour des communications professionnelles ou personnelles, <strong>{{ settings.software_name }}</strong> garantit la confidentialité et la sécurité de vos données.
-                    </p>
-                </div>
+            
+            <div class="space-y-4 text-gray-600 dark:text-gray-300">
+                <p class="text-lg leading-relaxed">
+                    <strong class="text-gray-900 dark:text-white">{{ settings.software_name }}</strong> est une plateforme sécurisée conçue pour l'envoi de messages sensibles. Chaque message est protégé par un lien unique et peut être configuré pour être automatiquement supprimé après lecture ou après une certaine durée.
+                </p>
+                <p class="text-lg leading-relaxed">
+                    Notre mission est de fournir une solution simple, sécurisée et fiable pour partager des informations confidentielles en toute tranquillité d'esprit.
+                </p>
+                <p class="text-lg leading-relaxed">
+                    Que ce soit pour des communications professionnelles ou personnelles, <strong class="text-gray-900 dark:text-white">{{ settings.software_name }}</strong> garantit la confidentialité et la sécurité de vos données grâce à un chiffrement AES-256.
+                </p>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-primary" onclick="closeModal('aboutModal')">
-                    <span>Fermer</span>
+            
+            <div class="mt-8 flex justify-end">
+                <button onclick="closeModal('aboutModal')" class="px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium">
+                    Fermer
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Modal Contact -->
-    <div id="contactModal" class="modal-overlay hidden" onclick="closeModal('contactModal')">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <h2 class="text-2xl font-bold text-gray-800">Contactez-nous</h2>
-                <button type="button" class="btn-close" onclick="closeModal('contactModal')">
-                    <span class="sr-only">Fermer</span>
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+    <div id="contactModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden transition-opacity" onclick="closeModal('contactModal')">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-2xl w-full p-8 transform transition-all scale-95" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Contactez-nous</h2>
+                    <div class="w-16 h-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"></div>
+                </div>
+                <button onclick="closeModal('contactModal')" class="p-2 -mr-2 -mt-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                    <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
                 </button>
             </div>
-            <div class="modal-body">
-                <div class="prose prose-gray max-w-none">
-                    <p class="text-gray-700 text-lg leading-relaxed mb-4">
-                        Pour toute question, suggestion ou assistance, n'hésitez pas à nous contacter. Notre équipe est là pour vous aider et répondre à vos besoins.
-                    </p>
-                    <p class="text-gray-700 text-lg leading-relaxed mb-6">
-                        Vous pouvez nous joindre par email à l'adresse suivante :
-                    </p>
-                    <p class="text-center">
-                        <a href="mailto:{{ settings.contact_email }}" class="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium rounded-lg shadow-md hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-opacity-50 transition-all duration-300 transform hover:scale-105 text-lg">
-                            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                            {{ settings.contact_email }}
-                        </a>
-                    </p>
-                </div>
+            
+            <div class="space-y-6 text-gray-600 dark:text-gray-300">
+                <p class="text-lg leading-relaxed">
+                    Pour toute question, suggestion ou assistance, n'hésitez pas à nous contacter. Notre équipe est là pour vous aider et répondre à vos besoins.
+                </p>
+                <p class="text-center">
+                    <a href="mailto:{{ settings.contact_email }}" class="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg shadow-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-300 transform hover:scale-[1.02]">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                        {{ settings.contact_email }}
+                    </a>
+                </p>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-secondary" onclick="closeModal('contactModal')">
-                    <span>Fermer</span>
+            
+            <div class="mt-8 flex justify-end">
+                <button onclick="closeModal('contactModal')" class="px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium">
+                    Fermer
                 </button>
             </div>
         </div>
     </div>
 
+    <!-- Flash messages data (generated server-side) -->
+    {% set flashed_messages = get_flashed_messages(with_categories=true) %}
+    {% if flashed_messages %}
     <script>
+        // Store flashed messages for JS
+        window.flashedMessages = [
+            {% for category, message in flashed_messages %}
+            { category: {{ category|tojson }}, message: {{ message|tojson }} }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ];
+    </script>
+    {% endif %}
+    
+    <script>
+        // Theme management
+        function getTheme() {
+            if (localStorage.getItem('theme') === 'dark') return 'dark';
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                document.getElementById('themeIcon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>';
+            } else {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                document.getElementById('themeIcon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>';
+            }
+        }
+        
+        function toggleTheme() {
+            const current = getTheme();
+            setTheme(current === 'dark' ? 'light' : 'dark');
+        }
+        
+        // Apply saved theme on load
+        setTheme(getTheme());
+        
+        // Modal functions
         function openModal(modalId) {
             document.getElementById(modalId).classList.remove('hidden');
+            const modalContent = document.getElementById(modalId).querySelector('div');
+            if (modalContent) {
+                modalContent.classList.remove('scale-95');
+            }
         }
-
+        
         function closeModal(modalId) {
             document.getElementById(modalId).classList.add('hidden');
         }
+        
+        // Toast notifications
+        function showToast(message, type) {
+            if (!type) type = 'info';
+            var container = document.getElementById('toastContainer');
+            var colors = {
+                info: 'bg-blue-500',
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                warning: 'bg-yellow-500'
+            };
+            var toast = document.createElement('div');
+            toast.className = 'px-6 py-4 rounded-lg text-white shadow-xl ' + colors[type] + ' animate-slide-in-right';
+            
+            // Create SVG paths for each type
+            var svgPath = '';
+            if (type === 'success') {
+                svgPath = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>';
+            } else if (type === 'error') {
+                svgPath = '<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM10 12a1 1 0 00-1 1v2a1 1 0 102 0v-2a1 1 0 00-1-1z" clip-rule="evenodd"></path>';
+            } else if (type === 'info') {
+                svgPath = '<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zm-1 7a1 1 0 01-1-1v-3a1 1 0 112 0v3a1 1 0 01-1 1z" clip-rule="evenodd"></path>';
+            } else if (type === 'warning') {
+                svgPath = '<path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>';
+            }
+            
+            toast.innerHTML = '<div class="flex items-center space-x-3"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">' + svgPath + '</svg><span>' + message + '</span></div>';
+            container.appendChild(toast);
+            setTimeout(function() { toast.remove(); }, 5000);
+        }
+        
+        // Show flashed messages on load
+        if (typeof window.flashedMessages !== 'undefined' && window.flashedMessages.length > 0) {
+            document.addEventListener('DOMContentLoaded', function() {
+                for (var i = 0; i < window.flashedMessages.length; i++) {
+                    var msg = window.flashedMessages[i];
+                    showToast(msg.message, msg.category);
+                }
+            });
+        }
+        
+        {% block extra_js %}{% endblock %}
     </script>
-    {% block extra_js %}{% endblock %}
+
+    <style>
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .animate-slide-in-right {
+            animation: slideInRight 0.3s ease-out;
+        }
+    </style>
 </body>
 </html>
