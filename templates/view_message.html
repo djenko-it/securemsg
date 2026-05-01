@@ -3,35 +3,118 @@
 {% block title %}{{ settings.title_read_message }}{% endblock %}
 
 {% block content %}
-<h1 class="text-3xl text-center font-bold">{{ settings.title_read_message }}</h1>
-<div class="alert alert-info">
-    {{ message }}
+<!-- Header -->
+<div class="text-center mb-12">
+    <div class="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-xl">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+    </div>
+    <h1 class="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+        {{ settings.title_read_message }}
+    </h1>
+    
+    {% if not delete_on_read %}
+    <div class="inline-flex items-center px-4 py-2 bg-green-100 dark:bg-green-900/20 rounded-full text-green-700 dark:text-green-300 text-sm font-medium">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+        </svg>
+        Consulté {{ views }} fois
+    </div>
+    {% else %}
+    <div class="inline-flex items-center px-4 py-2 bg-red-100 dark:bg-red-900/20 rounded-full text-red-700 dark:text-red-300 text-sm font-medium">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        Message unique - Supprimé après lecture
+    </div>
+    {% endif %}
 </div>
-<div class="text-center mt-4">
-    <p>Durée de validité du message : <strong>{{ time_remaining }}</strong></p>
+
+<!-- Message card -->
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <!-- Message content -->
+        <div class="p-8">
+            <div class="bg-blue-50 dark:bg-blue-900/10 p-6 rounded-xl mb-6">
+                <p class="text-lg text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">
+                    {{ message }}
+                </p>
+            </div>
+            
+            <!-- Message info -->
+            <div class="grid grid-cols-2 gap-4 text-sm">
+                <div class="flex items-center space-x-3 text-gray-600 dark:text-gray-400">
+                    <svg class="w-5 h-5 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>Valide jusqu'à : <strong class="text-gray-900 dark:text-gray-200">{{ (expiry|split('T'))[0] }} à {{ (expiry|split('T'))[1]|split('.')|first }}</strong></span>
+                </div>
+                <div class="flex items-center space-x-3 text-gray-600 dark:text-gray-400">
+                    <svg class="w-5 h-5 text-green-500 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>Temps restant : <strong class="text-gray-900 dark:text-gray-200">{{ time_remaining }}</strong></span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Security badge -->
+        <div class="bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 px-8 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                </div>
+                <span class="text-gray-700 dark:text-gray-300 font-medium">Chiffrement AES-256</span>
+            </div>
+            <span class="text-sm text-gray-500 dark:text-gray-400">Votre message est sécurisé</span>
+        </div>
+    </div>
 </div>
-{% if not delete_on_read %}
-<div class="alert alert-info">
-    Ce message a été consulté {{ views }} fois.
+
+<!-- Actions -->
+<div class="max-w-3xl mx-auto mt-8 flex flex-col sm:flex-row gap-4">
+    <button onclick="copyMessageToClipboard()" class="flex-1 flex items-center justify-center space-x-2 px-6 py-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium shadow-lg hover:shadow-xl">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+        </svg>
+        <span>Copier le message</span>
+    </button>
 </div>
-{% endif %}
-{% if delete_on_read %}
-<div class="alert alert-warning mt-4">
-    Ce message est unique et ne sera plus accessible une fois cette page fermée.
-</div>
-{% endif %}
 {% endblock %}
 
 {% block extra_js %}
-<script>
+    // Copy message to clipboard
+    async function copyMessageToClipboard() {
+        const messageElement = document.querySelector('.bg-blue-50 p');
+        const message = messageElement ? messageElement.textContent : '{{ message|replace("\n", "\\n") }}';
+        try {
+            await navigator.clipboard.writeText(message.trim());
+            showToast('Message copié dans le presse-papier !', 'success');
+        } catch (err) {
+            // Fallback
+            const textarea = document.createElement('textarea');
+            textarea.value = message.trim();
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showToast('Message copié dans le presse-papier !', 'success');
+        }
+    }
+    
+    // Warn before leaving if delete_on_read
     {% if delete_on_read %}
     window.addEventListener('beforeunload', function (e) {
         var confirmationMessage = 'Ce message est unique et ne sera plus accessible une fois cette page fermée.';
-        (e || window.event).returnValue = confirmationMessage; // Gecko + IE
-        return confirmationMessage; // Webkit, Safari, Chrome etc.
+        (e || window.event).returnValue = confirmationMessage;
+        return confirmationMessage;
     });
-
-    document.querySelectorAll('a.nav-link').forEach(link => {
+    
+    document.querySelectorAll('a[href]:not([href="#"]), button[type="submit"]').forEach(link => {
         link.addEventListener('click', function (event) {
             var confirmationMessage = 'Ce message est unique et ne sera plus accessible une fois cette page fermée. Voulez-vous continuer ?';
             if (!confirm(confirmationMessage)) {
@@ -40,5 +123,4 @@
         });
     });
     {% endif %}
-</script>
 {% endblock %}

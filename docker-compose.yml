@@ -9,12 +9,3 @@ services:
       - .env
     volumes:
       - ./data:/app/data
-      - ./static:/app/static
-
-  redis:
-    image: "redis:alpine"
-    volumes:
-      - redis_data:/data
-
-volumes:
-  redis_data:

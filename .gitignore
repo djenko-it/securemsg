@@ -4,16 +4,35 @@ messages.db
 
 # Ignorer les fichiers de configuration locaux
 .env
+.env.local
+.env.*.local
 
 # Ignorer les fichiers Python compilés
 __pycache__/
 *.py[cod]
+*$py.class
 
 # Ignorer les fichiers de dépendances
 node_modules/
+package-lock.json
 
 # Ignorer les fichiers de build
-# static/css/tailwind.css
+static/css/tailwind.css
 
 # Ignorer les fichiers de log
 *.log
+
+# Ignorer les fichiers IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Ignorer les fichiers de test
+.coverage
+htmlcov/
+
+# Ignorer les fichiers de database SQLite locaux
+*.db
+*.sqlite
+*.sqlite3
