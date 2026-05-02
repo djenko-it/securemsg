@@ -5,7 +5,7 @@
 {% block content %}
 <!-- Header -->
 <div class="text-center mb-12">
-    <h1 class="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+    <h1 class="text-4xl sm:text-5xl font-bold mb-4 text-blue-600 dark:text-blue-400">
         {{ settings.title_send_message }}
     </h1>
     <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
@@ -132,7 +132,7 @@
             <div class="pt-6">
                 <button 
                     type="submit" 
-                    class="w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
+                    class="w-full py-4 px-6 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
                 >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
@@ -143,47 +143,6 @@
         </form>
     </div>
 
-    <!-- Features card -->
-    <div class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 rounded-2xl p-8">
-        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
-            <svg class="w-6 h-6 mr-3 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-            </svg>
-            Sécurité et confidentialité
-        </h3>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="text-center p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl">
-                <div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                    <svg class="w-7 h-7 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                    </svg>
-                </div>
-                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Chiffrement AES-256</h4>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Tous vos messages sont chiffrés avec l'algorithme AES-256-GCM, l'un des plus sécurisés.</p>
-            </div>
-            
-            <div class="text-center p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl">
-                <div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-                    <svg class="w-7 h-7 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                    </svg>
-                </div>
-                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Auto-destruction</h4>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Configurez l'expiration automatique ou la suppression après lecture.</p>
-            </div>
-            
-            <div class="text-center p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl">
-                <div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                    <svg class="w-7 h-7 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                    </svg>
-                </div>
-                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Protection par mot de passe</h4>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Ajoutez une couche supplémentaire de sécurité avec un mot de passe.</p>
-            </div>
-        </div>
-    </div>
 </div>
 
 <!-- Link Modal -->
@@ -192,7 +151,7 @@
         <div class="flex justify-between items-start mb-6">
             <div>
                 <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Lien de votre message</h2>
-                <div class="w-16 h-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"></div>
+                <div class="w-16 h-1 bg-blue-600 rounded-full"></div>
             </div>
             <button onclick="closeLinkModal()" class="p-2 -mr-2 -mt-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
                 <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -228,6 +187,19 @@
                         </button>
                     </div>
                 </div>
+                
+                <!-- QR Code -->
+                {% if message_id %}
+                <div class="text-center py-4">
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Ou scannez ce QR code :</p>
+                    <img 
+                        src="/qrcode/{{ message_id }}" 
+                        alt="QR Code du lien" 
+                        class="mx-auto rounded-xl shadow-lg border-2 border-gray-200 dark:border-gray-700"
+                        style="width: 200px; height: 200px;"
+                    >
+                </div>
+                {% endif %}
             </div>
             
             <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl">

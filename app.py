@@ -3,7 +3,8 @@ import uuid
 import base64
 import sqlite3
 import logging
-from flask import Flask, request, render_template, url_for, redirect, flash, g
+import io
+from flask import Flask, request, render_template, url_for, redirect, flash, g, send_file
 from datetime import datetime, timedelta
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
@@ -11,6 +12,9 @@ from flask_wtf import FlaskForm
 from wtforms import PasswordField, SubmitField
 from wtforms.validators import DataRequired
 from werkzeug.security import generate_password_hash, check_password_hash
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.interval import IntervalTrigger
+import qrcode
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')
@@ -19,6 +23,50 @@ app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')
 @app.template_filter('split')
 def split_filter(value, delimiter):
     return value.split(delimiter)
+
+
+# Gestion des utilisateurs via cookies (pour l'historique)
+def get_user_token():
+    """Récupérer ou générer un token utilisateur depuis les cookies"""
+    if 'user_token' not in request.cookies:
+        # Générer un nouveau token
+        new_token = str(uuid.uuid4())
+        from flask import make_response
+        # On ne peut pas set cookie ici directement, donc on retourne le token
+        # Le cookie sera set dans la route
+        return new_token
+    return request.cookies.get('user_token')
+
+# Initialisation du scheduler pour nettoyer les messages expirés
+scheduler = BackgroundScheduler()
+
+# Définir le chemin de la base de données pour le scheduler
+if os.path.exists('/app'):
+    SCHEDULER_DATABASE = '/app/data/messages.db'
+else:
+    SCHEDULER_DATABASE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'messages.db')
+
+def cleanup_expired_messages():
+    """Fonction appelée périodiquement pour nettoyer les messages expirés"""
+    try:
+        with sqlite3.connect(SCHEDULER_DATABASE) as conn:
+            cur = conn.cursor()
+            cur.execute("DELETE FROM messages WHERE expiry < datetime('now')")
+            deleted_count = cur.rowcount
+            if deleted_count > 0:
+                logger.info(f"Nettoyage automatique : {deleted_count} messages expirés supprimés")
+    except Exception as e:
+        logger.error(f"Erreur lors du nettoyage automatique : {e}")
+
+# Démarrer le scheduler (nettoyage toutes les heures)
+scheduler.add_job(
+    cleanup_expired_messages,
+    IntervalTrigger(hours=1),
+    id='cleanup_expired',
+    name='Nettoyer les messages expirés',
+    replace_existing=True
+)
+scheduler.start()
 
 # Déterminer le chemin de la base de données
 # En Docker: /app/data/messages.db
@@ -104,6 +152,9 @@ def init_db():
             if 'encryption_key' not in columns:
                 conn.execute("ALTER TABLE messages ADD COLUMN encryption_key TEXT")
                 logger.info("Colonne encryption_key ajoutée à la table messages")
+            if 'user_token' not in columns:
+                conn.execute("ALTER TABLE messages ADD COLUMN user_token TEXT")
+                logger.info("Colonne user_token ajoutée à la table messages")
         except Exception as e:
             logger.error(f"Erreur lors de la migration de la base de données: {e}")
         conn.execute('''
@@ -162,7 +213,8 @@ def get_settings():
         'show_password_protect': settings[4],
         'contact_email': settings[5],
         'title_send_message': settings[6],
-        'title_read_message': settings[7]
+        'title_read_message': settings[7],
+        'dark_mode': os.environ.get('DARK_MODE', 'false').lower() == 'true'
     }
 
 # Détermine le délai d'expiration du message en fonction de l'option choisie par l'utilisateur.
@@ -264,6 +316,11 @@ def send_message():
     settings = get_settings()
     message = request.form['message']
 
+    # Gérer le user_token pour l'historique
+    user_token = request.cookies.get('user_token')
+    if not user_token:
+        user_token = str(uuid.uuid4())
+    
     # Génération d'un UUID comme identifiant unique du message
     message_id = str(uuid.uuid4())
     
@@ -292,13 +349,19 @@ def send_message():
 
     with sqlite3.connect(DATABASE) as conn:
         conn.execute(
-            'INSERT INTO messages (id, message, encryption_key, expiry, delete_on_read, password) VALUES (?, ?, ?, ?, ?, ?)', 
-            (message_id, encrypted_message, encrypted_key, expiry_time, delete_on_read, hashed_password)
+            'INSERT INTO messages (id, message, encryption_key, expiry, delete_on_read, password, user_token) VALUES (?, ?, ?, ?, ?, ?, ?)', 
+            (message_id, encrypted_message, encrypted_key, expiry_time, delete_on_read, hashed_password, user_token)
         )
     
     # Génération du lien à partager
     link = url_for('view_message', message_id=message_id, _external=True)
-    return render_template('index.html', settings=settings, message_link=link)
+    
+    # Set le cookie user_token si ce n'est pas déjà fait
+    from flask import make_response
+    resp = make_response(render_template('index.html', settings=settings, message_link=link, message_id=message_id))
+    if 'user_token' not in request.cookies:
+        resp.set_cookie('user_token', user_token, max_age=60*60*24*365*10)  # 10 ans
+    return resp
 
 
 @app.route('/message/<message_id>', methods=['GET', 'POST'])
@@ -378,6 +441,114 @@ def message_not_found():
 def message_expired():
     settings = get_settings()
     return render_template('message_expired.html', settings=settings)
+
+
+@app.route('/my-messages')
+def my_messages():
+    """Afficher l'historique des messages de l'utilisateur"""
+    settings = get_settings()
+    user_token = request.cookies.get('user_token')
+    
+    if not user_token:
+        # Pas de cookie, rediriger vers l'accueil
+        return redirect(url_for('index'))
+    
+    with sqlite3.connect(DATABASE) as conn:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute(
+            """SELECT id, expiry, delete_on_read, views, password IS NOT NULL as has_password 
+               FROM messages 
+               WHERE user_token = ? 
+               ORDER BY expiry DESC""", 
+            (user_token,)
+        )
+        messages = [dict(row) for row in cur.fetchall()]
+        
+        # Ajouter le statut pour chaque message
+        now = datetime.now()
+        for msg in messages:
+            expiry_time = datetime.strptime(msg['expiry'], '%Y-%m-%d %H:%M:%S.%f')
+            msg['status'] = 'expired' if expiry_time < now else ('read' if msg['views'] > 0 else 'unread')
+            msg['short_id'] = msg['id'][:8] + '...' if len(msg['id']) > 8 else msg['id']
+    
+    return render_template('my_messages.html', settings=settings, messages=messages)
+
+
+@app.route('/delete-message/<message_id>')
+def delete_message(message_id):
+    """Supprimer manuellement un message"""
+    user_token = request.cookies.get('user_token')
+    
+    if not user_token:
+        return redirect(url_for('index'))
+    
+    with sqlite3.connect(DATABASE) as conn:
+        # Vérifier que le message appartient bien à cet utilisateur
+        cur = conn.cursor()
+        cur.execute('SELECT id FROM messages WHERE id = ? AND user_token = ?', (message_id, user_token))
+        if not cur.fetchone():
+            flash("Message non trouvé ou vous n'avez pas la permission de le supprimer.")
+            return redirect(url_for('my_messages'))
+        
+        conn.execute('DELETE FROM messages WHERE id = ?', (message_id,))
+        logger.info(f"Message {message_id} supprimé manuellement par l'utilisateur")
+    
+    flash("Message supprimé avec succès.")
+    return redirect(url_for('my_messages'))
+
+
+@app.route('/cleanup')
+def cleanup_expired():
+    """Nettoyer les messages expirés - À appeler via cron"""
+    cleanup_key = os.environ.get('CLEANUP_KEY', 'cleanup-secret-key')
+    provided_key = request.args.get('key')
+    
+    if provided_key != cleanup_key:
+        return "Accès refusé", 403
+    
+    with sqlite3.connect(DATABASE) as conn:
+        cur = conn.cursor()
+        cur.execute("DELETE FROM messages WHERE expiry < datetime('now')")
+        deleted_count = cur.rowcount
+        logger.info(f"Nettoyage : {deleted_count} messages expirés supprimés")
+    
+    return f"{deleted_count} messages expirés supprimés", 200
+
+
+@app.route('/qrcode/<message_id>')
+def generate_qrcode(message_id):
+    """Générer un QR code pour un message"""
+    # Générer l'URL complète du message
+    message_url = url_for('view_message', message_id=message_id, _external=True)
+    
+    # Générer le QR code
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(message_url)
+    qr.make(fit=True)
+    
+    img = qr.make_image(fill_color="black", back_color="white")
+    
+    # Retourner l'image comme PNG
+    img_io = io.BytesIO()
+    img.save(img_io, format='PNG')
+    img_io.seek(0)
+    
+    return send_file(img_io, mimetype='image/png')
+
+
+# Arrêter le scheduler proprement à la fin
+import atexit
+def shutdown_scheduler():
+    scheduler.shutdown()
+    logger.info("Scheduler arrêté")
+
+atexit.register(shutdown_scheduler)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

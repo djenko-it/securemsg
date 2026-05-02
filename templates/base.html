@@ -14,7 +14,7 @@
 <body class="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans antialiased transition-colors duration-300">
     <!-- Background pattern - pointer-events-none pour ne pas bloquer les clics -->
     <div class="fixed inset-0 pointer-events-none" style="z-index: -1; pointer-events: none;">
-        <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(120,119,198,0.15),transparent)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(120,119,198,0.1),transparent)]"></div>
+        <div class="absolute inset-0 bg-blue-50 dark:bg-gray-900"></div>
     </div>
     
     <!-- Navigation -->
@@ -22,16 +22,17 @@
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <a class="flex items-center space-x-3" href="/">
-                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center shadow-lg">
+                    <div class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center shadow-lg">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                         </svg>
                     </div>
-                    <span class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{{ settings.software_name }}</span>
+                    <span class="text-xl font-bold text-blue-600 dark:text-blue-400">{{ settings.software_name }}</span>
                 </a>
                 
                 <div class="flex items-center space-x-6">
                     <a class="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium" href="/">Accueil</a>
+                    <a class="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium" href="/my-messages">Mes messages</a>
                     <button onclick="openModal('aboutModal')" class="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium flex items-center space-x-1">
                         <span>À propos</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,13 +43,6 @@
                         <span>Contact</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                        </svg>
-                    </button>
-                    
-                    <!-- Dark mode toggle -->
-                    <button id="themeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors" onclick="toggleTheme()">
-                        <svg id="themeIcon" class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
                         </svg>
                     </button>
                 </div>
@@ -70,7 +64,7 @@
             <div class="flex justify-between items-start mb-6">
                 <div>
                     <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">À propos de {{ settings.software_name }}</h2>
-                    <div class="w-16 h-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"></div>
+                    <div class="w-16 h-1 bg-blue-600 rounded-full"></div>
                 </div>
                 <button onclick="closeModal('aboutModal')" class="p-2 -mr-2 -mt-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
                     <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,7 +99,7 @@
             <div class="flex justify-between items-start mb-6">
                 <div>
                     <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Contactez-nous</h2>
-                    <div class="w-16 h-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"></div>
+                    <div class="w-16 h-1 bg-blue-600 rounded-full"></div>
                 </div>
                 <button onclick="closeModal('contactModal')" class="p-2 -mr-2 -mt-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
                     <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -119,7 +113,7 @@
                     Pour toute question, suggestion ou assistance, n'hésitez pas à nous contacter. Notre équipe est là pour vous aider et répondre à vos besoins.
                 </p>
                 <p class="text-center">
-                    <a href="mailto:{{ settings.contact_email }}" class="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg shadow-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-300 transform hover:scale-[1.02]">
+                    <a href="mailto:{{ settings.contact_email }}" class="inline-flex items-center justify-center px-8 py-4 bg-blue-600 text-white font-medium rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                         </svg>
@@ -150,31 +144,12 @@
     {% endif %}
     
     <script>
-        // Theme management
-        function getTheme() {
-            if (localStorage.getItem('theme') === 'dark') return 'dark';
-            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-        
-        function setTheme(theme) {
-            if (theme === 'dark') {
-                document.documentElement.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-                document.getElementById('themeIcon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>';
-            } else {
-                document.documentElement.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-                document.getElementById('themeIcon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>';
-            }
-        }
-        
-        function toggleTheme() {
-            const current = getTheme();
-            setTheme(current === 'dark' ? 'light' : 'dark');
-        }
-        
-        // Apply saved theme on load
-        setTheme(getTheme());
+        // Appliquer le thème depuis settings.dark_mode
+        {% if settings.dark_mode %}
+            document.documentElement.classList.add('dark');
+        {% else %}
+            document.documentElement.classList.remove('dark');
+        {% endif %}
         
         // Modal functions
         function openModal(modalId) {
