@@ -4,19 +4,18 @@
 
 ---
 
-## ✨ Fonctionnalités
+## Fonctionnalités
 
 - **Chiffrement AES-256** – Messages chiffrés de bout en bout
-- **Auto-destruction** – Suppression après lecture ou à l'expiration
+- **Suppression automatique** – Suppression après lecture ou à l'expiration
 - **Protection par mot de passe** – Optionnelle pour une sécurité renforcée
 - **Expiration programmable** – 3h, 1 jour, 1 semaine ou 1 mois
 - **QR Code** – Partage simplifié via code QR
 - **Historique** – Suivi de vos messages envoyés
-- **Thème clair/sombre** – Configurable via `.env`
 
 ---
 
-## 🚀 Installation
+## Installation
 
 ### Prérequis
 - Docker + Docker Compose
@@ -40,7 +39,7 @@ docker-compose up -d
 
 ---
 
-## 📖 Utilisation
+## Utilisation
 
 ### Envoyer un message
 1. Écrivez votre message
@@ -60,18 +59,17 @@ docker-compose up -d
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 | Variable | Description | Valeur par défaut |
 |----------|-------------|------------------|
 | `SECRET_KEY` | Clé secrète Flask | `supersecretkey_changez_moi_en_production` |
 | `ENCRYPTION_KEY` | Clé de chiffrement AES-256 | Générée automatiquement |
-| `DARK_MODE` | Thème sombre activé | `false` |
 | `SOFTWARE_NAME` | Nom de l'application | `SecureMsg` |
 
 ---
 
-## 🤝 Contribution
+## Contribution
 
 Les pull requests sont les bienvenues !
 
