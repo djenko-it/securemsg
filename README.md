@@ -66,15 +66,3 @@ docker-compose up -d
 | `SECRET_KEY` | Clé secrète Flask | `supersecretkey_changez_moi_en_production` |
 | `ENCRYPTION_KEY` | Clé de chiffrement AES-256 | Générée automatiquement |
 | `SOFTWARE_NAME` | Nom de l'application | `SecureMsg` |
-
----
-
-## Contribution
-
-Les pull requests sont les bienvenues !
-
----
-
-**Technologies** : Python, Flask, SQLite, Docker, Tailwind CSS
-
-**Licence** : MIT
